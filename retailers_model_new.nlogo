@@ -164,6 +164,7 @@ end
 ; Calculate market-shares
 to-report update-market-shares
   py:set "num_retailers" count retailers
+  py:set "reatilers" retailers
   py:set "customers" customers
   (py:run
     "from collections import defaultdict"
@@ -171,10 +172,58 @@ to-report update-market-shares
     "for customer in customers:"
     "    market_shares_count[customer['NEAREST-SHOP']] += 1"
    )
-;  (py:run
-;    "for retailer in retailers:"
-;    "    if retailer['WHO'] ==
-   report py:runresult "market_shares_count"
+  let markets-shares-count py:runresult "market_shares_count"
+
+;  ask retailers [
+;    let market-share markets-show
+;    show (word "shares all : " markets-shares-count )
+;    show (word "shares: " markets-shares-count 0)
+
+;  ]
+;  foreach markets-shares-count [
+;    share ->
+;    ask retailers with [
+;      WHO = item 0 share
+;    ]
+;    [ set market-share item 1 share]
+;  ]
+
+   foreach markets-shares-count [
+    share ->
+    show (word "share " item 0 share " : " item 1 share )
+  ]
+
+  ask retailers [
+;    show (word "Retail ID: " who )
+    let retail-share-count get-update-market-share who markets-shares-count
+    show (word "Retail ID: " who " count: " retail-share-count)
+    set market-share retail-share-count
+  ]
+
+
+
+
+  ask retailers [
+    show (word "FINAL Retail ID: " who " share: " market-share )
+  ]
+
+
+   report markets-shares-count
+end
+
+to-report get-update-market-share [ retailer_id market-shares-count ]
+  py:set "market_shares_count" market-shares-count
+  py:set "retailer_id" retailer_id
+  (py:run
+    "count = 0"
+    "for market_share in market_shares_count:"
+    "    print(f'market_share[0]: {market_share[0]}')"
+    "    print(f'retailer_id: {retailer_id}')"
+    "    if market_share[0] == retailer_id:"
+    "        count = market_share[1]"
+    "print(f'get-update-count: {count}')"
+    )
+   report py:runresult "count"
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -320,7 +369,7 @@ distance-fraction
 distance-fraction
 0
 10
-1.2
+1.0
 0.2
 1
 NIL
@@ -335,7 +384,7 @@ price-fraction
 price-fraction
 0
 10
-1.4
+1.0
 0.2
 1
 NIL
