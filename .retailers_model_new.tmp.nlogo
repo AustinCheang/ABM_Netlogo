@@ -172,8 +172,8 @@ to-report update-market-shares
     "    market_shares_count[customer['NEAREST-SHOP']] += 1"
    )
 ;  (py:run
-    "for retailer in retailers:"
-    "    if retailer['WHO'] ==
+;    "for retailer in retailers:"
+;    "    if retailer['WHO'] ==
    report py:runresult "market_shares_count"
 end
 @#$#@#$#@

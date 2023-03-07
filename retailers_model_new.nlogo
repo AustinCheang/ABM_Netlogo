@@ -174,7 +174,7 @@ to-report update-market-shares
 ;  (py:run
 ;    "for retailer in retailers:"
 ;    "    if retailer['WHO'] ==
-;   report py:runresult "market_shares_count"
+   report py:runresult "market_shares_count"
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
