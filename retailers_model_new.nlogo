@@ -6,7 +6,7 @@ breed [customers customer]
 breed [retailers retailer]
 
 customers-own [ consumption-rate nearest-shop ]
-retailers-own [ revenue price market-share]
+retailers-own [ revenue price market-share evaluation-period ]
 
 to setup
   clear-all
@@ -21,7 +21,7 @@ to setup
   show (word "price fraction: " price-fraction)
 
   ; Find the nearest shop for each of the initial setting
-  let customers-list customers
+  let customers-list customerss
   ask customers [
     set nearest-shop calculate-weighted-preferance XCOR YCOR WHO
     show (word WHO " customer goes to " nearest-shop)
@@ -46,6 +46,7 @@ to setup
 end
 
 to go
+  evaluate-pricing-strategy
   tick
 end
 
@@ -67,6 +68,7 @@ to setup-retailers
 ;    set price random(5 * unit-cost)
     set price random-float 0.5 * unit-cost +  unit-cost
     setxy (-12 + random-float 24) (-12 + random-float 24)
+    set evaluation-period 5
   ]
 end
 
@@ -225,6 +227,20 @@ to-report get-update-market-share [ retailer_id market-shares-count ]
     )
    report py:runresult "count"
 end
+
+to evaluate-pricing-strategy
+  if ticks mod 5 = 0 [
+    ask retailers [
+      if market-share < 16 and price > ( unit-cost + 1) [
+        show (word "original price" price)
+        set price ( price - 1 )
+        show (word "updated price" price)
+      ]
+
+    ]
+  ]
+
+end
 @#$#@#$#@
 GRAPHICS-WINDOW
 566
@@ -294,7 +310,7 @@ initial-number-retailers
 initial-number-retailers
 1
 10
-4.0
+2.0
 1
 1
 NIL
@@ -328,9 +344,9 @@ show-price?
 
 PLOT
 22
-305
-473
-584
+304
+559
+632
 plot 1
 NIL
 NIL
