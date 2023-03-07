@@ -6,7 +6,7 @@ breed [customers customer]
 breed [retailers retailer]
 
 customers-own [ consumption-rate nearest-shop ]
-retailers-own [ revenue price market-share evaluation-period ]
+retailers-own [ revenue price market-share evaluation-period downward-price-change ]
 
 to setup
   clear-all
@@ -21,7 +21,7 @@ to setup
   show (word "price fraction: " price-fraction)
 
   ; Find the nearest shop for each of the initial setting
-  let customers-list customerss
+  let customers-list customers
   ask customers [
     set nearest-shop calculate-weighted-preferance XCOR YCOR WHO
     show (word WHO " customer goes to " nearest-shop)
@@ -48,6 +48,7 @@ end
 to go
   evaluate-pricing-strategy
   tick
+  if ticks >= 100 [ stop ]
 end
 
 to setup-customers
@@ -69,6 +70,7 @@ to setup-retailers
     set price random-float 0.5 * unit-cost +  unit-cost
     setxy (-12 + random-float 24) (-12 + random-float 24)
     set evaluation-period 5
+    set downward-price-change random-float 2
   ]
 end
 
@@ -231,9 +233,9 @@ end
 to evaluate-pricing-strategy
   if ticks mod 5 = 0 [
     ask retailers [
-      if market-share < 16 and price > ( unit-cost + 1) [
+      if market-share < 16 and price - downward-price-change > unit-cost [
         show (word "original price" price)
-        set price ( price - 1 )
+        set price ( price - downward-price-change )
         show (word "updated price" price)
       ]
 
@@ -385,7 +387,7 @@ distance-fraction
 distance-fraction
 0
 10
-10.0
+0.8
 0.2
 1
 NIL
@@ -400,7 +402,7 @@ price-fraction
 price-fraction
 0
 10
-0.0
+0.8
 0.2
 1
 NIL
@@ -418,10 +420,10 @@ show-chosen-shop?
 -1000
 
 PLOT
-59
-658
-259
-808
+24
+649
+559
+828
 plot market share
 NIL
 NIL
