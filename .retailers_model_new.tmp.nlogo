@@ -334,10 +334,10 @@ HORIZONTAL
 SWITCH
 291
 161
-424
+442
 194
-show-price?
-show-price?
+show-shop-id?
+show-shop-id?
 0
 1
 -1000
@@ -385,7 +385,7 @@ distance-fraction
 distance-fraction
 0
 10
-1.0
+10.0
 0.2
 1
 NIL
@@ -400,7 +400,7 @@ price-fraction
 price-fraction
 0
 10
-1.0
+0.0
 0.2
 1
 NIL
