@@ -208,6 +208,17 @@ GRAPHICS-WINDOW
 ticks
 30.0
 
+SWITCH
+0
+0
+0
+0
+NIL
+NIL
+1
+1
+-1000
+
 BUTTON
 23
 39
@@ -249,7 +260,7 @@ initial-number-retailers
 initial-number-retailers
 1
 10
-3.0
+10.0
 1
 1
 NIL
@@ -344,17 +355,6 @@ price-fraction
 1
 NIL
 HORIZONTAL
-
-SWITCH
-303
-216
-488
-249
-show-chosen-shop?
-show-chosen-shop?
-1
-1
--1000
 
 @#$#@#$#@
 ## WHAT IS IT?
