@@ -65,7 +65,7 @@ to setup-retailers
     set color random 140 + 56
     set size 3  ; easier to see
 ;    set price random(5 * unit-cost)
-    set price random-float 0.2 * unit-cost +  unit-cost
+    set price random-float 0.5 * unit-cost +  unit-cost
     setxy (-12 + random-float 24) (-12 + random-float 24)
   ]
 end
@@ -94,9 +94,6 @@ to display-chosen-shop-labels
 end
 
 to-report calculate-weighted-preferance [ _XCOR _YCOR _WHO]
-  ; for each shop for the customer
-  ; calculate weighted sum
-  ; select the minimum sum
   py:set "_WHO" _WHO
   py:set "retailers" retailers
   py:set "XCOR" _XCOR
@@ -107,12 +104,11 @@ to-report calculate-weighted-preferance [ _XCOR _YCOR _WHO]
   (py:run
     "import math"
     "choices = {}"
-;    "print(f'dist-faction type: {type(dist_fraction)}')"
     "for retailer in retailers:"
     "    distance = math.sqrt((XCOR - retailer['XCOR']) ** 2 + (YCOR - retailer['YCOR']) ** 2)"
 ;    "    print('in1')"
 ;    "    print(f'retailer price: {retailer}')"
-    "    weighted_sum = dist_fraction * distance + price_fraction * math.log(retailer['PRICE'])"
+    "    weighted_sum = dist_fraction * distance + price_fraction * retailer['PRICE']"
     "    choices[retailer['WHO']] = weighted_sum"
 ;    "    print('in2')"
     "choice = min(choices, key=choices.get) "
@@ -178,7 +174,7 @@ to-report update-market-shares
 ;  (py:run
 ;    "for retailer in retailers:"
 ;    "    if retailer['WHO'] ==
-   report py:runresult "market_shares_count"
+;   report py:runresult "market_shares_count"
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -234,7 +230,7 @@ initial-number-customers
 initial-number-customers
 0
 1000
-50.0
+51.0
 1
 1
 NIL
@@ -249,7 +245,7 @@ initial-number-retailers
 initial-number-retailers
 1
 10
-3.0
+4.0
 1
 1
 NIL
@@ -264,7 +260,7 @@ unit-cost
 unit-cost
 0
 100
-2.0
+25.0
 1
 1
 NIL
@@ -324,8 +320,8 @@ distance-fraction
 distance-fraction
 0
 10
-1.0
-1
+1.2
+0.2
 1
 NIL
 HORIZONTAL
@@ -339,8 +335,8 @@ price-fraction
 price-fraction
 0
 10
-1.0
-1
+1.4
+0.2
 1
 NIL
 HORIZONTAL
@@ -352,9 +348,27 @@ SWITCH
 249
 show-chosen-shop?
 show-chosen-shop?
-1
+0
 1
 -1000
+
+PLOT
+59
+658
+259
+808
+plot market share
+NIL
+NIL
+0.0
+10.0
+0.0
+10.0
+true
+false
+"" ""
+PENS
+"default" 1.0 0 -16777216 true "" "plot count turtles"
 
 @#$#@#$#@
 ## WHAT IS IT?
