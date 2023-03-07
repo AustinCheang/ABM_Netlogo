@@ -74,7 +74,7 @@ to display-labels
   ask retailers [
     set label ""
   ]
-  if show-price? [
+  if show-shop-id? [
     ask retailers [
       set label WHO
       set label-color 2
@@ -318,11 +318,11 @@ HORIZONTAL
 SWITCH
 291
 161
-424
+442
 194
-show-price?
-show-price?
-0
+show-shop-id?
+show-shop-id?
+1
 1
 -1000
 
@@ -369,7 +369,7 @@ distance-fraction
 distance-fraction
 0
 10
-1.0
+10.0
 0.2
 1
 NIL
@@ -384,7 +384,7 @@ price-fraction
 price-fraction
 0
 10
-1.0
+0.0
 0.2
 1
 NIL

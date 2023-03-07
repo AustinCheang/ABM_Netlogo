@@ -217,8 +217,8 @@ to-report get-update-market-share [ retailer_id market-shares-count ]
   (py:run
     "count = 0"
     "for market_share in market_shares_count:"
-    "    print('market_share[0]: {market_share[0]}')"
-    "    print('retailer_id: {retailer_id})"
+    "    print(f'market_share[0]: {market_share[0]}')"
+    "    print(f'retailer_id: {retailer_id}')"
     "    if market_share[0] == retailer_id:"
     "        count = market_share[1]"
     "print(f'get-update-count: {count}')"
@@ -318,10 +318,10 @@ HORIZONTAL
 SWITCH
 291
 161
-424
+442
 194
-show-price?
-show-price?
+show-shop-id?
+show-shop-id?
 0
 1
 -1000
@@ -369,7 +369,7 @@ distance-fraction
 distance-fraction
 0
 10
-1.0
+10.0
 0.2
 1
 NIL
@@ -384,7 +384,7 @@ price-fraction
 price-fraction
 0
 10
-1.0
+0.0
 0.2
 1
 NIL
