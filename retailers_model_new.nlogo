@@ -6,7 +6,7 @@ breed [customers customer]
 breed [retailers retailer]
 
 customers-own [ consumption-rate nearest-shop ]
-retailers-own [ revenue price market-share evaluation-period downward-price-change ]
+retailers-own [ revenue price market-share evaluation-period price-change previous-market-share ]
 
 to setup
   clear-all
@@ -34,6 +34,10 @@ to setup
 
   let market-shares update-market-shares
   show (word "Market shares: " market-shares)
+
+  ask retailers [
+    set previous-market-share market-share
+  ]
 
   display-labels
   display-chosen-shop-labels
@@ -70,7 +74,7 @@ to setup-retailers
     set price random-float 0.5 * unit-cost +  unit-cost
     setxy (-12 + random-float 24) (-12 + random-float 24)
     set evaluation-period 5
-    set downward-price-change random-float 2
+    set price-change random-float 2
   ]
 end
 
@@ -231,18 +235,28 @@ to-report get-update-market-share [ retailer_id market-shares-count ]
 end
 
 to evaluate-pricing-strategy
+  show (word "" retailers)
   if ticks mod 5 = 0 [
     ask retailers [
-      if market-share < 16 and price - downward-price-change > unit-cost [
+      if market-share < ( 0.3 * initial-number-customers ) and price - price-change > unit-cost [
         show (word "original price" price)
-        set price ( price - downward-price-change )
+        set price ( price - price-change )
         show (word "updated price" price)
       ]
 
+      if market-share >= previous-market-share [
+        set price ( price + price-change )
+      ]
+
+      set previous-market-share market-share
     ]
   ]
-
 end
+
+
+
+
+
 @#$#@#$#@
 GRAPHICS-WINDOW
 566
@@ -312,7 +326,7 @@ initial-number-retailers
 initial-number-retailers
 1
 10
-2.0
+4.0
 1
 1
 NIL
@@ -327,7 +341,7 @@ unit-cost
 unit-cost
 0
 100
-25.0
+16.0
 1
 1
 NIL
