@@ -120,8 +120,8 @@ to-report calculate-weighted-preferance [ _XCOR _YCOR _WHO]
     "    choices[retailer['WHO']] = weighted_sum"
 ;    "    print('in2')"
     "choice = min(choices, key=choices.get) "
-;    "print(f'choice: {choices}')"
-;    "print(f'{_WHO} chosen {choice}')"
+    "print(f'choice: {choices}')"
+    "print(f'{_WHO} chosen {choice}')"
   )
   report py:runresult "choice"
 end
@@ -196,23 +196,24 @@ to-report update-market-shares
 ;    [ set market-share item 1 share]
 ;  ]
 
-;   foreach markets-shares-count [
-;    share ->
-;    show (word "share " item 0 share " : " item 1 share )
-;  ]
-;
-;  ask retailers [
-;;    show (word "Retail ID: " who )
-;    let retail-share-count get-update-market-share who markets-shares-count
-;    show (word "Retail ID: " who " count: " retail-share-count)
-;    set market-share retail-share-count
-;  ]
+   foreach markets-shares-count [
+    share ->
+    show (word "share " item 0 share " : " item 1 share )
+  ]
+
+  ask retailers [
+;    show (word "Retail ID: " who )
+    let retail-share-count get-update-market-share who markets-shares-count
+    show (word "Retail ID: " who " count: " retail-share-count)
+    set market-share retail-share-count
+  ]
 
 
-;
-;  ask retailers [
-;    show (word "FINAL Retail ID: " who " share: " market-share )
-;  ]
+
+
+  ask retailers [
+    show (word "FINAL Retail ID: " who " share: " market-share )
+  ]
 
 
    report markets-shares-count
@@ -225,7 +226,7 @@ to-report get-update-market-share [ retailer_id market-shares-count ]
     "count = 0"
     "for market_share in market_shares_count:"
 ;    "    print(f'market_share[0]: {market_share[0]}')"
-;    "    print(f'retailer_id: {retailer_id}')"
+    "    print(f'retailer_id: {retailer_id}')"
     "    if int(market_share[0]) == int(retailer_id):"
 ;    "        print(f'Matched {market_share[0]}')"
     "        count = market_share[1]"
