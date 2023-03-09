@@ -406,11 +406,7 @@ distance-fraction
 distance-fraction
 0
 10
-<<<<<<< HEAD
-0.6
-=======
 2.0
->>>>>>> main
 0.2
 1
 NIL
