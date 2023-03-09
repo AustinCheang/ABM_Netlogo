@@ -12,6 +12,7 @@ breed [retailers retailer]
 customers-own [ consumption-rate nearest-shop ]
 retailers-own [ revenue price market-share evaluation-period price-change previous-market-share ]
 
+; #################################################################### Set UP ############################################################
 to setup
   clear-all
   py:setup py:python
@@ -42,15 +43,6 @@ to setup
   reset-ticks
 end
 
-to go
-  update-customers-preferences
-  update-market-shares
-
-  evaluate-pricing-strategy
-  tick
-  if ticks >= 100 [ stop ]
-end
-
 to setup-customers
   create-customers initial-number-customers  ; create the wolves, then initialize their variables
   [
@@ -70,8 +62,28 @@ to setup-retailers
     setxy (-12 + random-float 24) (-12 + random-float 24)
     set evaluation-period 5
     set price-change random-float 2
+    ifelse randomise-evaluation-period? [
+      set evaluation-period random (evaluation-period-range - 5 ) + 5
+    ] [
+      set evaluation-period evaluation-period-range
+    ]
+    output-print ( word "Retailer: " WHO " Period: " evaluation-period)
   ]
 end
+
+; ############################################################### GO  #######################################################################
+
+to go
+  update-customers-preferences
+  update-market-shares
+
+  evaluate-pricing-strategy
+  tick
+  update-customers-preference
+  if ticks >= 1000 [ stop ]
+end
+
+; ############################################################ Labels and Switches ############################################################
 
 to display-labels
   ask retailers [
@@ -96,10 +108,18 @@ to display-chosen-shop-labels
   ]
 end
 
+to update-customers-preference
+  ask customers [
+    set label nearest-shop
+    set label-color black
+  ]
+end
+
+; ########################################################### Functions #########################################################################
+
 to update-customers-preferences
     ask customers [
     set nearest-shop calculate-weighted-preferance XCOR YCOR WHO
-    show (word WHO " customer goes to " nearest-shop)
   ]
 end
 
@@ -131,7 +151,6 @@ to-report calculate-distance [ _XCOR _YCOR _WHO]
   py:set "XCOR" _XCOR
   py:set "YCOR" _YCOR
 
-
   (py:run
     "import math"
     "distances = {}"
@@ -144,27 +163,6 @@ to-report calculate-distance [ _XCOR _YCOR _WHO]
   report py:runresult "distances"
 end
 
-
-;to-report find-nearest-store [ _XCOR _YCOR _WHO]
-;  py:set "_WHO" _WHO
-;  py:set "retailers" retailers
-;  py:set "XCOR" _XCOR
-;  py:set "YCOR" _YCOR
-;
-;;  py:set "target_store" ""
-;  (py:run
-;    "import math"
-;    "target_store = ''"
-;    "current_nearest = float('inf')"
-;    "for retailer in retailers:"
-;    "    distance = math.sqrt((XCOR - retailer['XCOR']) ** 2 + (YCOR - retailer['YCOR']) ** 2)"
-;    "    if distance < current_nearest:"
-;    "        target_store = retailer['WHO']"
-;    "        current_nearest = distance"
-;  )
-;
-;  report py:runresult "target_store"
-;end
 
 ; Calculate market-shares
 to update-market-shares
@@ -179,25 +177,7 @@ to update-market-shares
    )
   let markets-shares-count py:runresult "market_shares_count"
   set market-shares-list markets-shares-count
-;  ask retailers [
-;    let market-share markets-show
-;    show (word "shares all : " markets-shares-count )
-;    show (word "shares: " markets-shares-count 0)
 
-;  ]
-;  foreach markets-shares-count [
-;    share ->
-;    ask retailers with [
-;      WHO = item 0 share
-;    ]
-;    [ set market-share item 1 share]
-;  ]
-
-;   foreach markets-shares-count [
-;    share ->
-;    show (word "share " item 0 share " : " item 1 share )
-;  ]
-;
   ask retailers [
     let retail-share-count get-update-market-share who markets-shares-count
     show (word "Retail ID: " who " count: " retail-share-count)
@@ -220,41 +200,68 @@ to-report get-update-market-share [ retailer_id market-shares-count ]
 end
 
 to evaluate-pricing-strategy
-  if ticks mod 5 = 0 [
-    ; get maximum market share
-    py:set "market_shares_list" market-shares-list
-    (py:run
-      "max_market_share = max(x[1] for x in market_shares_list)"
-    )
+  ask retailers [
+    if ticks mod evaluation-period = 0 [
+      ; get maximum market share
+      py:set "market_shares_list" market-shares-list
+      (py:run
+        "max_market_share = max(x[1] for x in market_shares_list)"
+      )
 
-    ask retailers [
-      ifelse market-share < py:runresult "max_market_share" and price - price-change > unit-cost
-      [
-        show (word "original price" price)
-        set price ( price - price-change )
-        show (word "updated price" price)
-      ]
-      [
-        if market-share >= previous-market-share
+      ask retailers [
+        ifelse market-share < py:runresult "max_market_share" and price - price-change > unit-cost
         [
-          set price ( price + price-change )
+          show (word "original price" price)
+          set price ( price - price-change )
+          show (word "updated price" price)
+        ]
+        [
+          if market-share >= previous-market-share
+          [
+            set price ( price + price-change )
+          ]
         ]
       ]
     ]
   ]
 end
 
+;
+;to evaluate-pricing-strategy
+;  if ticks mod 5 = 0 [
+;    ; get maximum market share
+;    py:set "market_shares_list" market-shares-list
+;    (py:run
+;      "max_market_share = max(x[1] for x in market_shares_list)"
+;    )
+;
+;    ask retailers [
+;      ifelse market-share < py:runresult "max_market_share" and price - price-change > unit-cost
+;      [
+;        show (word "original price" price)
+;        set price ( price - price-change )
+;        show (word "updated price" price)
+;      ]
+;      [
+;        if market-share >= previous-market-share
+;        [
+;          set price ( price + price-change )
+;        ]
+;      ]
+;    ]
+;  ]
+;end
 
 
 @#$#@#$#@
 GRAPHICS-WINDOW
-566
-10
-1142
-587
+1029
+50
+1812
+834
 -1
 -1
-17.21212121212121
+23.5
 1
 10
 1
@@ -275,10 +282,10 @@ ticks
 30.0
 
 BUTTON
-23
-39
-89
-72
+447
+69
+513
+102
 NIL
 setup
 NIL
@@ -292,10 +299,10 @@ NIL
 1
 
 SLIDER
-15
-114
-238
-147
+439
+144
+662
+177
 initial-number-customers
 initial-number-customers
 0
@@ -307,25 +314,25 @@ NIL
 HORIZONTAL
 
 SLIDER
-15
-152
-232
-185
+439
+182
+656
+215
 initial-number-retailers
 initial-number-retailers
 1
 10
-4.0
+3.0
 1
 1
 NIL
 HORIZONTAL
 
 SLIDER
-273
-116
-445
-149
+697
+146
+869
+179
 unit-cost
 unit-cost
 0
@@ -337,10 +344,10 @@ NIL
 HORIZONTAL
 
 SWITCH
-291
-161
-442
-194
+715
+191
+866
+224
 show-shop-id?
 show-shop-id?
 0
@@ -348,10 +355,10 @@ show-shop-id?
 -1000
 
 PLOT
-22
-304
-559
-632
+446
+334
+983
+662
 plot 1
 NIL
 NIL
@@ -365,10 +372,10 @@ true
 PENS
 
 BUTTON
-136
-43
-199
-76
+560
+73
+623
+106
 go
 go
 T
@@ -382,25 +389,25 @@ NIL
 1
 
 SLIDER
-15
-194
-187
-227
+439
+224
+611
+257
 distance-fraction
 distance-fraction
 0
 10
-0.8
+0.6
 0.2
 1
 NIL
 HORIZONTAL
 
 SLIDER
-15
-236
-187
-269
+439
+266
+611
+299
 price-fraction
 price-fraction
 0
@@ -412,10 +419,10 @@ NIL
 HORIZONTAL
 
 SWITCH
-291
-199
-476
-232
+715
+229
+900
+262
 show-chosen-shop?
 show-chosen-shop?
 0
@@ -423,21 +430,84 @@ show-chosen-shop?
 -1000
 
 PLOT
-24
-649
-559
-828
+448
+679
+983
+983
 plot market share
 NIL
+Market-Share-Percentage
+0.0
+10.0
+0.0
+1.0
+true
+true
+"" "ask retailers [\n    create-temporary-plot-pen (word who)\n    set-plot-pen-color color\n    let market-share-percent (market-share / count customers)\n    plotxy ticks market-share-percent\n    \n]"
+PENS
+"Equilibrium" 1.0 0 -2674135 true "" "plotxy ticks (1 / count retailers)"
+
+SWITCH
+121
+211
+365
+244
+Randomise-Buying-Frequency
+Randomise-Buying-Frequency
+1
+1
+-1000
+
+PLOT
+59
+707
+259
+857
+plot revenue
+NIL
 NIL
 0.0
 10.0
 0.0
 10.0
 true
-true
-"" "ask retailers [\n    create-temporary-plot-pen (word who)\n    set-plot-pen-color color\n    plotxy ticks market-share\n]"
+false
+"" ""
 PENS
+"default" 1.0 0 -16777216 true "" "plot count turtles"
+
+SLIDER
+182
+128
+388
+161
+evaluation-period-range
+evaluation-period-range
+5
+30
+24.0
+1
+1
+NIL
+HORIZONTAL
+
+SWITCH
+166
+93
+412
+126
+randomise-evaluation-period?
+randomise-evaluation-period?
+0
+1
+-1000
+
+OUTPUT
+163
+385
+410
+555
+13
 
 @#$#@#$#@
 ## WHAT IS IT?
