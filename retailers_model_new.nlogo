@@ -113,7 +113,7 @@ end
 
 to update-customers-preference
   ask customers [
-    set label nearest-shop
+    set label preferred-shop
     set label-color black
   ]
 end
@@ -211,6 +211,7 @@ to evaluate-pricing-strategy
       (py:run
         "max_market_share = max(x[1] for x in market_shares_list)"
       )
+    ]
 
     ask retailers [
       ifelse market-share < py:runresult "max_market_share" and price - price-change > unit-cost
@@ -240,7 +241,7 @@ end
 to buy
   ask customers [
     let preferr_shop preferred-shop
-    if ticks mod buying-frequency = 0 [
+    if ticks mod (buying-frequency + 1) = 0 [
       ask retailers [
         if WHO = preferr_shop [
           set quantity-sold ( quantity-sold + 1 )
@@ -255,7 +256,6 @@ to calculate-revenue
     set revenue ( quantity-sold * price )
   ]
 end
-
 
 
 
@@ -467,24 +467,6 @@ Randomise-Buying-Frequency
 1
 -1000
 
-PLOT
-59
-707
-259
-857
-plot revenue
-NIL
-NIL
-0.0
-10.0
-0.0
-10.0
-true
-false
-"" ""
-PENS
-"default" 1.0 0 -16777216 true "" "plot count turtles"
-
 SLIDER
 182
 128
@@ -519,11 +501,11 @@ OUTPUT
 13
 
 PLOT
-606
-654
-1323
-827
-plot revenue
+263
+992
+980
+1165
+plot revenue_1
 NIL
 NIL
 0.0
