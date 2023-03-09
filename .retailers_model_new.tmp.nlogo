@@ -61,8 +61,8 @@ to setup
 end
 
 to setup-globals
-  set grid-x-inc world-width / 5
-  set grid-y-inc world-height / 5
+  set grid-x-inc world-width / 7
+  set grid-y-inc world-height / 7
 end
 
 ;; Make the patches have appropriate colors, set up the roads and intersections agentsets,
@@ -116,13 +116,13 @@ to setup-retailers
     set color random 140 + 56
     set size 3  ; easier to see
     set price ( random-float ( 0.5 * unit-cost ) +  unit-cost )
-;    setxy (-12 + random-float 24) (-12 + random-float 24)
+    setxy (-16 + random 7 * 5 + 0.5) (16 + random 7 * 5 -)
 ;    move-to one-of patches
-    let my-patch one-of patches
+;    let my-patch one-of patches
 ;    let patch-center-x [pxcor] of patches
 ;    let patch-center-y [pycor] of patches
 ;    show (word "pxcor: " pxcor)
-    move-to my-patch
+;    move-to my-patch
 ;    setxy patch-center-x patch-center-y
     set evaluation-period 5
     ifelse randomise-evaluation-period? [
@@ -321,13 +321,12 @@ end
 
 
 
-
 @#$#@#$#@
 GRAPHICS-WINDOW
 1037
 59
-1672
-695
+1752
+775
 -1
 -1
 20.242424242424246
@@ -340,10 +339,10 @@ GRAPHICS-WINDOW
 1
 1
 1
--15
-15
--15
-15
+-17
+17
+-17
+17
 0
 0
 1
@@ -391,7 +390,7 @@ initial-number-retailers
 initial-number-retailers
 1
 10
-4.0
+3.0
 1
 1
 NIL
