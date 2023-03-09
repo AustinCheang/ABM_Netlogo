@@ -12,13 +12,16 @@ globals [
    ;; patch agentsets
   intersections ;; agentset containing the patches that are intersections
   roads         ;; agentset containing the patches that are roads
+
+  grid-list
+  global-grid-list
 ]
 
 breed [customers customer]
 breed [retailers retailer]
 
 customers-own [ consumption-rate preferred-shop buying-frequency ]
-retailers-own [ revenue price market-share evaluation-period price-change previous-market-share quantity-sold ]
+retailers-own [ revenue profit price market-share evaluation-period price-change previous-market-share previous-quantity-sold quantity-sold ]
 patches-own [
   my-row          ;; the row of the intersection counting from the upper left corner of the
                   ;; world.  -1 for non-intersection patches.
@@ -34,7 +37,12 @@ to setup
 ;  ask patches [ set pcolor white ]
   setup-globals
   setup-patches
+  create-grid-dict
+
+
   setup-retailers
+  assign-all-locations
+
   setup-customers
 
 
@@ -45,6 +53,7 @@ to setup
   update-customers-preferences
   ; calculate market-shares of each retailer
   update-market-shares
+
 
 
   py:set "retailers" retailers
@@ -114,16 +123,14 @@ to setup-retailers
   [
     set shape "house"
     set color random 140 + 56
-    set size 3  ; easier to see
+    set size 2.5  ; easier to see
     set price ( random-float ( 0.5 * unit-cost ) +  unit-cost )
-    setxy (-16 + random 7 * 5 + 0.5) (16 + random 7 * 5 - 0.5)
-;    move-to one-of patches
-;    let my-patch one-of patches
-;    let patch-center-x [pxcor] of patches
-;    let patch-center-y [pycor] of patches
-;    show (word "pxcor: " pxcor)
-;    move-to my-patch
-;    setxy patch-center-x patch-center-y
+
+;    py:set "grid_list_dict" grid-list
+;    show (word "grid-list: " grid-list)
+
+;    setxy (-16 + random 7 * 5 + 0.5) (16 + random 7 * 5 - 0.5)
+;    setxy (py:runresult("x")) (py:runresult("y"))
     set evaluation-period 5
     ifelse randomise-evaluation-period? [
       set evaluation-period random (evaluation-period-range - 5 ) + 5
@@ -135,6 +142,50 @@ to setup-retailers
   ]
 end
 
+to assign-all-locations
+;  show ("inside assign-all-locations")
+  ask retailers [
+    let coordinates assign-locations
+    set xcor item 0 coordinates
+    set ycor item 1 coordinates
+  ]
+end
+
+to-report assign-locations
+      show (grid-list)
+      py:set "grid_list_dict" grid-list
+      (py:run
+      "import random"
+      "grid_list_dict = my_dict = {item[0]: item[1] for item in grid_list_dict}"
+      "print(f'grid_list_dict: {grid_list_dict}')"
+      "grid_id = random.randint(0, 48)"
+;      "print(f'out grid_id: {grid_id}')"
+      "while str(grid_id) not in grid_list_dict:"
+      "    grid_id = random.randint(0, 48)"
+;      "    print(f'duplicated grid_id: {grid_id}')"
+      "grid_id = str(grid_id)"
+      "x, y = grid_list_dict[grid_id]"
+      "del grid_list_dict[grid_id]"
+      )
+  set grid-list py:runresult("grid_list_dict")
+  report py:runresult("[x, y]")
+end
+
+to create-grid-dict
+;  py::set "grid_list" grid-list
+  (py:run
+    "grid_list = {}"
+    "counter = 0"
+    "for i in range(7):"
+    "    for j in range(7):"
+    "        grid_list[counter] = (-16 + i * 5 + 0.5, 16 - j *  5 - 0.5)"
+    "        counter += 1"
+    )
+    set grid-list py:runresult("grid_list")
+    set global-grid-list py:runresult("grid_list")
+end
+
+
 ; ############################################################### GO  #######################################################################
 
 to go
@@ -142,6 +193,7 @@ to go
   update-market-shares
   buy ; check if customers need to buy
   calculate-revenue ; calculate revenue of each retailer
+  calculate-profit
   evaluate-pricing-strategy
   tick
   update-customers-preference
@@ -276,27 +328,32 @@ to evaluate-pricing-strategy
     ]
 
     ask retailers [
-      ifelse market-share < py:runresult "max_market_share" and price - price-change > unit-cost
+      if market-share < py:runresult "max_market_share"
       [
         set price-change random-float 2
-        show (word "price change: -" price-change)
-        show (word "original price: " price)
-        set price ( price - price-change )
-        show (word "updated price: " price)
-        show (word "")
-      ]
-      [
+;        show (word "price change: -" price-change)
+;        show (word "original price: " price)
+
+        while [price - price-change < unit-cost] [
+          set price-change random-float 2
+        ]
+        set price ( price - price-change)]
+;        show (word "updated price: " price)
+;        show (word "")
+
         if market-share >= previous-market-share
         [
           set price-change random-float 2
-          show (word "max price change: " price-change)
-          show (word "max original price: " price)
+;          show (word "max price change: " price-change)
+;          show (word "max original price: " price)
           set price ( price + price-change )
-          show (word "max updated price: " price)
-          show (word "")
+;          show (word "max updated price: " price)
+;          show (word "")
         ]
-      ]
+
     ]
+    set quantity-sold 0
+    show market-shares-list
   ]
 end
 
@@ -313,20 +370,27 @@ to buy
   ]
 end
 
+
+
+to calculate-profit
+  ask retailers [
+;    show quantity-sold
+    set profit ( quantity-sold * (price - unit-cost))
+  ]
+end
+
 to calculate-revenue
   ask retailers [
     set revenue ( quantity-sold * price )
   ]
 end
 
-
-
 @#$#@#$#@
 GRAPHICS-WINDOW
 1037
 59
-1752
-775
+1753
+776
 -1
 -1
 20.242424242424246
@@ -375,7 +439,7 @@ initial-number-customers
 initial-number-customers
 0
 1000
-50.0
+100.0
 1
 1
 NIL
@@ -390,7 +454,7 @@ initial-number-retailers
 initial-number-retailers
 1
 10
-10.0
+4.0
 1
 1
 NIL
@@ -418,7 +482,7 @@ SWITCH
 224
 show-shop-id?
 show-shop-id?
-0
+1
 1
 -1000
 
@@ -465,7 +529,7 @@ distance-fraction
 distance-fraction
 0
 10
-2.0
+1.0
 0.2
 1
 NIL
@@ -480,7 +544,7 @@ price-fraction
 price-fraction
 0
 10
-2.0
+1.0
 0.2
 1
 NIL
@@ -493,7 +557,7 @@ SWITCH
 262
 show-chosen-shop?
 show-chosen-shop?
-0
+1
 1
 -1000
 
@@ -522,7 +586,7 @@ SWITCH
 244
 Randomise-Buying-Frequency
 Randomise-Buying-Frequency
-1
+0
 1
 -1000
 
@@ -574,6 +638,23 @@ NIL
 true
 true
 "" "ask retailers [\n    create-temporary-plot-pen (word who)\n    set-plot-pen-color color\n    plotxy ticks revenue\n]"
+PENS
+
+PLOT
+1029
+823
+1621
+1049
+Profit
+NIL
+NIL
+0.0
+10.0
+0.0
+10.0
+true
+true
+"" "ask retailers [\n    create-temporary-plot-pen (word who)\n    set-plot-pen-color color\n    plotxy ticks profit\n]"
 PENS
 
 @#$#@#$#@
