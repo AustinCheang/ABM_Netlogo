@@ -9,8 +9,8 @@ globals [
 breed [customers customer]
 breed [retailers retailer]
 
-customers-own [ consumption-rate nearest-shop ]
-retailers-own [ revenue price market-share evaluation-period price-change previous-market-share ]
+customers-own [ consumption-rate preferred-shop buying-frequency ]
+retailers-own [ revenue price market-share evaluation-period price-change previous-market-share quantity-sold ]
 
 ; #################################################################### Set UP ############################################################
 to setup
@@ -43,12 +43,14 @@ to setup
   reset-ticks
 end
 
+
 to setup-customers
   create-customers initial-number-customers  ; create the wolves, then initialize their variables
   [
     set shape "person"
     set size 1  ; easier to see
     setxy random-xcor random-ycor
+    set buying-frequency 1 + random 6
   ]
 end
 
@@ -61,13 +63,13 @@ to setup-retailers
     set price ( random-float ( 0.5 * unit-cost ) +  unit-cost )
     setxy (-12 + random-float 24) (-12 + random-float 24)
     set evaluation-period 5
-    set price-change random-float 2
     ifelse randomise-evaluation-period? [
       set evaluation-period random (evaluation-period-range - 5 ) + 5
     ] [
       set evaluation-period evaluation-period-range
     ]
     output-print ( word "Retailer: " WHO " Period: " evaluation-period)
+    set quantity-sold 0
   ]
 end
 
@@ -76,11 +78,12 @@ end
 to go
   update-customers-preferences
   update-market-shares
-
+  buy ; check if customers need to buy
+  calculate-revenue ; calculate revenue of each retailer
   evaluate-pricing-strategy
   tick
   update-customers-preference
-  if ticks >= 1000 [ stop ]
+  if ticks >= 10 [ stop ]
 end
 
 ; ############################################################ Labels and Switches ############################################################
@@ -102,7 +105,7 @@ to display-chosen-shop-labels
   ask customers [ set label "" ]
   if show-chosen-shop? [
     ask customers [
-      set label nearest-shop
+      set label preferred-shop
       set label-color black
     ]
   ]
@@ -119,11 +122,12 @@ end
 
 to update-customers-preferences
     ask customers [
-    set nearest-shop calculate-weighted-preferance XCOR YCOR WHO
+    set preferred-shop calculate-weighted-preferance XCOR YCOR WHO
+;    show (word WHO " customer goes to " preferred-shop)
   ]
 end
 
-to-report calculate-weighted-preferance [ _XCOR _YCOR _WHO]
+to-report calculate-weighted-preferance [ _XCOR _YCOR _WHO ]
   py:set "_WHO" _WHO
   py:set "retailers" retailers
   py:set "XCOR" _XCOR
@@ -157,7 +161,7 @@ to-report calculate-distance [ _XCOR _YCOR _WHO]
     "current_nearest = float('inf')"
     "for retailer in retailers:"
     "    distance = math.sqrt((XCOR - retailer['XCOR']) ** 2 + (YCOR - retailer['YCOR']) ** 2)"
-    "    distances[retailer['WHO'] = distance"
+    "    distances[retailer['WHO']] = distance"
   )
 
   report py:runresult "distances"
@@ -173,14 +177,14 @@ to update-market-shares
     "from collections import defaultdict"
     "market_shares_count = defaultdict(int)"
     "for customer in customers:"
-    "    market_shares_count[customer['NEAREST-SHOP']] += 1"
+    "    market_shares_count[customer['PREFERRED-SHOP']] += 1"
    )
   let markets-shares-count py:runresult "market_shares_count"
   set market-shares-list markets-shares-count
 
   ask retailers [
     let retail-share-count get-update-market-share who markets-shares-count
-    show (word "Retail ID: " who " count: " retail-share-count)
+;    show (word "Retail ID: " who " count: " retail-share-count)
     set previous-market-share market-share
     set market-share retail-share-count
   ]
@@ -208,49 +212,54 @@ to evaluate-pricing-strategy
         "max_market_share = max(x[1] for x in market_shares_list)"
       )
 
-      ask retailers [
-        ifelse market-share < py:runresult "max_market_share" and price - price-change > unit-cost
+    ask retailers [
+      ifelse market-share < py:runresult "max_market_share" and price - price-change > unit-cost
+      [
+        set price-change random-float 2
+        show (word "price change: -" price-change)
+        show (word "original price: " price)
+        set price ( price - price-change )
+        show (word "updated price: " price)
+        show (word "")
+      ]
+      [
+        if market-share >= previous-market-share
         [
-          show (word "original price" price)
-          set price ( price - price-change )
-          show (word "updated price" price)
-        ]
-        [
-          if market-share >= previous-market-share
-          [
-            set price ( price + price-change )
-          ]
+          set price-change random-float 2
+          show (word "max price change: " price-change)
+          show (word "max original price: " price)
+          set price ( price + price-change )
+          show (word "max updated price: " price)
+          show (word "")
         ]
       ]
     ]
   ]
 end
 
-;
-;to evaluate-pricing-strategy
-;  if ticks mod 5 = 0 [
-;    ; get maximum market share
-;    py:set "market_shares_list" market-shares-list
-;    (py:run
-;      "max_market_share = max(x[1] for x in market_shares_list)"
-;    )
-;
-;    ask retailers [
-;      ifelse market-share < py:runresult "max_market_share" and price - price-change > unit-cost
-;      [
-;        show (word "original price" price)
-;        set price ( price - price-change )
-;        show (word "updated price" price)
-;      ]
-;      [
-;        if market-share >= previous-market-share
-;        [
-;          set price ( price + price-change )
-;        ]
-;      ]
-;    ]
-;  ]
-;end
+to buy
+  ask customers [
+    let preferr_shop preferred-shop
+    if ticks mod buying-frequency = 0 [
+      ask retailers [
+        if WHO = preferr_shop [
+          set quantity-sold ( quantity-sold + 1 )
+        ]
+      ]
+    ]
+  ]
+end
+
+to calculate-revenue
+  ask retailers [
+    set revenue ( quantity-sold * price )
+  ]
+end
+
+
+
+
+
 
 
 @#$#@#$#@
@@ -307,7 +316,7 @@ initial-number-customers
 initial-number-customers
 0
 1000
-51.0
+50.0
 1
 1
 NIL
@@ -397,7 +406,11 @@ distance-fraction
 distance-fraction
 0
 10
+<<<<<<< HEAD
 0.6
+=======
+2.0
+>>>>>>> main
 0.2
 1
 NIL
@@ -412,7 +425,7 @@ price-fraction
 price-fraction
 0
 10
-3.2
+2.0
 0.2
 1
 NIL
@@ -508,6 +521,23 @@ OUTPUT
 410
 555
 13
+
+PLOT
+606
+654
+1323
+827
+plot revenue
+NIL
+NIL
+0.0
+10.0
+0.0
+10.0
+true
+true
+"" "ask retailers [\n    create-temporary-plot-pen (word who)\n    set-plot-pen-color color\n    plotxy ticks revenue\n]"
+PENS
 
 @#$#@#$#@
 ## WHAT IS IT?
