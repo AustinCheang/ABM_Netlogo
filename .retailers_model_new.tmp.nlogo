@@ -238,7 +238,6 @@ to evaluate-pricing-strategy
         show (word "original price: " price)
         set price ( price - price-change )
         show (word "updated price: " price)
-        show (word "")
       ]
       [
         if market-share >= previous-market-share
@@ -248,7 +247,7 @@ to evaluate-pricing-strategy
           show (word "max original price: " price)
           set price ( price + price-change )
           show (word "max updated price: " price)
-          show (word "")
+
         ]
       ]
     ]
