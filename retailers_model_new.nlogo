@@ -2,6 +2,10 @@ extensions [
   py
 ]
 
+globals [
+  market-shares-list
+]
+
 breed [customers customer]
 breed [retailers retailer]
 
@@ -11,7 +15,6 @@ retailers-own [ revenue price market-share evaluation-period price-change previo
 to setup
   clear-all
   py:setup py:python
-
   ask patches [ set pcolor white ]
   setup-retailers
   setup-customers
@@ -21,23 +24,13 @@ to setup
   show (word "price fraction: " price-fraction)
 
   ; Find the nearest shop for each of the initial setting
-  let customers-list customers
-  ask customers [
-    set nearest-shop calculate-weighted-preferance XCOR YCOR WHO
-    show (word WHO " customer goes to " nearest-shop)
-  ]
-
+  update-customers-preferences
+  ; calculate market-shares of each retailer
+  update-market-shares
 
 
   py:set "retailers" retailers
   py:set "customers" customers
-
-  let market-shares update-market-shares
-  show (word "Market shares: " market-shares)
-
-  ask retailers [
-    set previous-market-share market-share
-  ]
 
   display-labels
   display-chosen-shop-labels
@@ -50,6 +43,9 @@ to setup
 end
 
 to go
+  update-customers-preferences
+  update-market-shares
+
   evaluate-pricing-strategy
   tick
   if ticks >= 100 [ stop ]
@@ -70,8 +66,7 @@ to setup-retailers
     set shape "house"
     set color random 140 + 56
     set size 3  ; easier to see
-;    set price random(5 * unit-cost)
-    set price random-float 0.5 * unit-cost +  unit-cost
+    set price ( random-float ( 0.5 * unit-cost ) +  unit-cost )
     setxy (-12 + random-float 24) (-12 + random-float 24)
     set evaluation-period 5
     set price-change random-float 2
@@ -101,6 +96,13 @@ to display-chosen-shop-labels
   ]
 end
 
+to update-customers-preferences
+    ask customers [
+    set nearest-shop calculate-weighted-preferance XCOR YCOR WHO
+    show (word WHO " customer goes to " nearest-shop)
+  ]
+end
+
 to-report calculate-weighted-preferance [ _XCOR _YCOR _WHO]
   py:set "_WHO" _WHO
   py:set "retailers" retailers
@@ -114,14 +116,9 @@ to-report calculate-weighted-preferance [ _XCOR _YCOR _WHO]
     "choices = {}"
     "for retailer in retailers:"
     "    distance = math.sqrt((XCOR - retailer['XCOR']) ** 2 + (YCOR - retailer['YCOR']) ** 2)"
-;    "    print('in1')"
-;    "    print(f'retailer price: {retailer}')"
     "    weighted_sum = dist_fraction * distance + price_fraction * retailer['PRICE']"
     "    choices[retailer['WHO']] = weighted_sum"
-;    "    print('in2')"
     "choice = min(choices, key=choices.get) "
-;    "print(f'choice: {choices}')"
-;    "print(f'{_WHO} chosen {choice}')"
   )
   report py:runresult "choice"
 end
@@ -170,7 +167,7 @@ end
 ;end
 
 ; Calculate market-shares
-to-report update-market-shares
+to update-market-shares
   py:set "num_retailers" count retailers
   py:set "reatilers" retailers
   py:set "customers" customers
@@ -181,7 +178,7 @@ to-report update-market-shares
     "    market_shares_count[customer['NEAREST-SHOP']] += 1"
    )
   let markets-shares-count py:runresult "market_shares_count"
-
+  set market-shares-list markets-shares-count
 ;  ask retailers [
 ;    let market-share markets-show
 ;    show (word "shares all : " markets-shares-count )
@@ -201,21 +198,12 @@ to-report update-market-shares
 ;    show (word "share " item 0 share " : " item 1 share )
 ;  ]
 ;
-;  ask retailers [
-;;    show (word "Retail ID: " who )
-;    let retail-share-count get-update-market-share who markets-shares-count
-;    show (word "Retail ID: " who " count: " retail-share-count)
-;    set market-share retail-share-count
-;  ]
-
-
-;
-;  ask retailers [
-;    show (word "FINAL Retail ID: " who " share: " market-share )
-;  ]
-
-
-   report markets-shares-count
+  ask retailers [
+    let retail-share-count get-update-market-share who markets-shares-count
+    show (word "Retail ID: " who " count: " retail-share-count)
+    set previous-market-share market-share
+    set market-share retail-share-count
+  ]
 end
 
 to-report get-update-market-share [ retailer_id market-shares-count ]
@@ -224,36 +212,37 @@ to-report get-update-market-share [ retailer_id market-shares-count ]
   (py:run
     "count = 0"
     "for market_share in market_shares_count:"
-;    "    print(f'market_share[0]: {market_share[0]}')"
-;    "    print(f'retailer_id: {retailer_id}')"
     "    if int(market_share[0]) == int(retailer_id):"
-;    "        print(f'Matched {market_share[0]}')"
     "        count = market_share[1]"
     "        break"
-;    "print(f'get-update-count: {count}')"
     )
    report py:runresult "count"
 end
 
 to evaluate-pricing-strategy
-  show (word "" retailers)
   if ticks mod 5 = 0 [
+    ; get maximum market share
+    py:set "market_shares_list" market-shares-list
+    (py:run
+      "max_market_share = max(x[1] for x in market_shares_list)"
+    )
+
     ask retailers [
-      if market-share < ( 0.3 * initial-number-customers ) and price - price-change > unit-cost [
+      ifelse market-share < py:runresult "max_market_share" and price - price-change > unit-cost
+      [
         show (word "original price" price)
         set price ( price - price-change )
         show (word "updated price" price)
       ]
-
-      if market-share >= previous-market-share [
-        set price ( price + price-change )
+      [
+        if market-share >= previous-market-share
+        [
+          set price ( price + price-change )
+        ]
       ]
-
-      set previous-market-share market-share
     ]
   ]
 end
-
 
 
 
@@ -393,12 +382,27 @@ NIL
 1
 
 SLIDER
-53
-207
-225
-240
+15
+194
+187
+227
 distance-fraction
 distance-fraction
+0
+10
+0.8
+0.2
+1
+NIL
+HORIZONTAL
+
+SLIDER
+15
+236
+187
+269
+price-fraction
+price-fraction
 0
 10
 3.2
@@ -407,26 +411,11 @@ distance-fraction
 NIL
 HORIZONTAL
 
-SLIDER
-65
-255
-237
-288
-price-fraction
-price-fraction
-0
-10
-1.2
-0.2
-1
-NIL
-HORIZONTAL
-
 SWITCH
-303
-216
-488
-249
+291
+199
+476
+232
 show-chosen-shop?
 show-chosen-shop?
 0
@@ -447,7 +436,7 @@ NIL
 10.0
 true
 true
-"" "ask retailers [\n    create-temporary-plot-pen (word who)\n    set-plot-pen-color color\n    plotxy ticks market-share\n    ]"
+"" "ask retailers [\n    create-temporary-plot-pen (word who)\n    set-plot-pen-color color\n    plotxy ticks market-share\n]"
 PENS
 
 @#$#@#$#@
