@@ -9,8 +9,8 @@ globals [
 breed [customers customer]
 breed [retailers retailer]
 
-customers-own [ consumption-rate nearest-shop ]
-retailers-own [ revenue price market-share evaluation-period price-change previous-market-share ]
+customers-own [ consumption-rate preferred-shop buying-frequency ]
+retailers-own [ revenue price market-share evaluation-period price-change previous-market-share quantity-sold ]
 
 to setup
   clear-all
@@ -45,7 +45,8 @@ end
 to go
   update-customers-preferences
   update-market-shares
-
+  buy ; check if customers need to buy
+  calculate-revenue ; calculate revenue of each retailer
   evaluate-pricing-strategy
   tick
   if ticks >= 100 [ stop ]
@@ -57,6 +58,7 @@ to setup-customers
     set shape "person"
     set size 1  ; easier to see
     setxy random-xcor random-ycor
+    set buying-frequency 1 + random 6
   ]
 end
 
@@ -70,6 +72,7 @@ to setup-retailers
     setxy (-12 + random-float 24) (-12 + random-float 24)
     set evaluation-period 5
     set price-change random-float 2
+    set quantity-sold 0
   ]
 end
 
@@ -90,7 +93,7 @@ to display-chosen-shop-labels
   ask customers [ set label "" ]
   if show-chosen-shop? [
     ask customers [
-      set label nearest-shop
+      set label preferred-shop
       set label-color black
     ]
   ]
@@ -98,12 +101,12 @@ end
 
 to update-customers-preferences
     ask customers [
-    set nearest-shop calculate-weighted-preferance XCOR YCOR WHO
-    show (word WHO " customer goes to " nearest-shop)
+    set preferred-shop calculate-weighted-preferance XCOR YCOR WHO
+    show (word WHO " customer goes to " preferred-shop)
   ]
 end
 
-to-report calculate-weighted-preferance [ _XCOR _YCOR _WHO]
+to-report calculate-weighted-preferance [ _XCOR _YCOR _WHO ]
   py:set "_WHO" _WHO
   py:set "retailers" retailers
   py:set "XCOR" _XCOR
@@ -175,7 +178,7 @@ to update-market-shares
     "from collections import defaultdict"
     "market_shares_count = defaultdict(int)"
     "for customer in customers:"
-    "    market_shares_count[customer['NEAREST-SHOP']] += 1"
+    "    market_shares_count[customer['PREFERRED-SHOP']] += 1"
    )
   let markets-shares-count py:runresult "market_shares_count"
   set market-shares-list markets-shares-count
@@ -243,6 +246,30 @@ to evaluate-pricing-strategy
     ]
   ]
 end
+
+to buy
+  ask customers [
+    let preferr_shop preferred-shop
+    if ticks mod buying-frequency = 0 [
+      ask retailers [
+        if WHO = preferr_shop [
+          set quantity-sold ( quantity-sold + 1 )
+        ]
+      ]
+    ]
+  ]
+end
+
+to calculate-revenue
+  ask retailers [
+    set revenue ( quantity-sold * price )
+  ]
+end
+
+
+
+
+
 
 
 
@@ -437,6 +464,23 @@ NIL
 true
 true
 "" "ask retailers [\n    create-temporary-plot-pen (word who)\n    set-plot-pen-color color\n    plotxy ticks market-share\n]"
+PENS
+
+PLOT
+606
+654
+1323
+827
+plot revenue
+NIL
+NIL
+0.0
+10.0
+0.0
+10.0
+true
+true
+"" "ask retailers [\n    create-temporary-plot-pen (word who)\n    set-plot-pen-color color\n    plotxy ticks revenue\n]"
 PENS
 
 @#$#@#$#@
