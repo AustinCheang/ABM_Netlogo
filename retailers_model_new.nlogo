@@ -20,8 +20,23 @@ globals [
 breed [customers customer]
 breed [retailers retailer]
 
-customers-own [ consumption-rate preferred-shop buying-frequency ]
-retailers-own [ revenue profit price market-share evaluation-period price-change previous-market-share previous-quantity-sold quantity-sold ]
+customers-own [
+  consumption-rate
+  preferred-shop
+  buying-frequency
+]
+retailers-own [
+  revenue
+  profit
+  price
+  market-share
+  evaluation-period
+  price-change
+  previous-market-share
+  previous-quantity-sold
+  cumulative-profit
+  quantity-sold
+]
 patches-own [
   my-row          ;; the row of the intersection counting from the upper left corner of the
                   ;; world.  -1 for non-intersection patches.
@@ -46,9 +61,6 @@ to setup
   setup-customers
 
 
-  show (word "distance fraction: " distance-fraction)
-  show (word "price fraction: " price-fraction)
-
   ; Find the nearest shop for each of the initial setting
   update-customers-preferences
   ; calculate market-shares of each retailer
@@ -62,9 +74,11 @@ to setup
   display-labels
   display-chosen-shop-labels
 
-  ask retailers [
-    show (word "ID: " WHO " Price: " price)
-  ]
+;  ask retailers [
+;    show (word "ID: " WHO " Price: " price)
+;  ]
+
+
 
   reset-ticks
 end
@@ -152,12 +166,11 @@ to assign-all-locations
 end
 
 to-report assign-locations
-      show (grid-list)
+;      show (grid-list)
       py:set "grid_list_dict" grid-list
       (py:run
       "import random"
       "grid_list_dict = my_dict = {item[0]: item[1] for item in grid_list_dict}"
-      "print(f'grid_list_dict: {grid_list_dict}')"
       "grid_id = random.randint(0, 48)"
 ;      "print(f'out grid_id: {grid_id}')"
       "while str(grid_id) not in grid_list_dict:"
@@ -196,8 +209,10 @@ to go
   calculate-profit
   evaluate-pricing-strategy
   tick
+
+  show market-shares-list
   update-customers-preference
-  if ticks >= 1000 [ stop ]
+  if ticks >= 100 [ stop ]
 end
 
 ; ############################################################ Labels and Switches ############################################################
@@ -237,7 +252,7 @@ end
 to update-customers-preferences
     ask customers [
     set preferred-shop calculate-weighted-preferance XCOR YCOR WHO
-;    show (word WHO " customer goes to " preferred-shop)
+
   ]
 end
 
@@ -331,29 +346,20 @@ to evaluate-pricing-strategy
       if market-share < py:runresult "max_market_share"
       [
         set price-change random-float 2
-;        show (word "price change: -" price-change)
-;        show (word "original price: " price)
 
         while [price - price-change < unit-cost] [
           set price-change random-float 2
         ]
         set price ( price - price-change)]
-;        show (word "updated price: " price)
-;        show (word "")
 
         if market-share >= previous-market-share
         [
           set price-change random-float 2
-;          show (word "max price change: " price-change)
-;          show (word "max original price: " price)
           set price ( price + price-change )
-;          show (word "max updated price: " price)
-;          show (word "")
         ]
 
     ]
     set quantity-sold 0
-    show market-shares-list
   ]
 end
 
@@ -364,6 +370,7 @@ to buy
       ask retailers [
         if WHO = preferr_shop [
           set quantity-sold ( quantity-sold + 1 )
+          set cumulative-profit (cumulative-profit + price - unit-cost)
         ]
       ]
     ]
@@ -374,17 +381,16 @@ end
 
 to calculate-profit
   ask retailers [
-;    show quantity-sold
     set profit ( quantity-sold * (price - unit-cost))
   ]
 end
 
 to calculate-revenue
   ask retailers [
+;    show (word "quantity-sold: " quantity-sold)
     set revenue ( quantity-sold * price )
   ]
 end
-
 @#$#@#$#@
 GRAPHICS-WINDOW
 1037
