@@ -1,4 +1,4 @@
-# Experiment Guidline
+# Experiment Guideline
 
 ## Setup and Parameters
 
