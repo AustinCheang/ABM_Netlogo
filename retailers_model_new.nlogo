@@ -131,6 +131,16 @@ to setup-customers
 end
 
 to setup-retailers
+  if experiment = "2-retailer-even-space" [
+    set initial-number-retailers 2
+  ]
+  if experiment = "3-retailer-even-space" [
+    set initial-number-retailers 3
+  ]
+  if experiment = "4-retailer-even-space" [
+    set initial-number-retailers 4
+  ]
+
   create-retailers initial-number-retailers  ; Initialise the retailers agents
   [
     set shape "house"
@@ -150,12 +160,6 @@ to setup-retailers
       set evaluation-period set-evaluation-period-range
     ]
 
-    ifelse randomise-buying-frequency? [
-      set set-buying-frequency random (set-evaluation-period-range - 1 ) + 1
-    ] [
-      set buying-frequency set-buying-frequency
-    ]
-
     output-print ( word "Retailer: " WHO )
     output-print ( word "Evaluation Period: " evaluation-period)
     output-print ( " " )
@@ -165,11 +169,54 @@ to setup-retailers
 end
 
 to assign-retailers-locations
-  ask retailers [
+  py:set "grid_list_all" grid-list
+  if experiment = "Customised" [
+    ask retailers [
     let coordinates assign-locations
     set xcor item 0 coordinates
     set ycor item 1 coordinates
   ]
+  ]
+   if experiment = "2-retailer-even-space" [
+    (py:run
+      "available_locations = [22, 26]"
+    )
+    ask retailers [
+    let retail-cor item 1 py:runresult("grid_list_all[available_locations.pop()]")
+    show (retail-cor)
+    set xcor item 0 retail-cor
+    set ycor item 1 retail-cor
+      ]
+  ]
+  if experiment = "3-retailer-even-space" [
+    (py:run
+      "available_locations = [22, 12, 40]"
+     )
+    ask retailers [
+    let retail-cor item 1 py:runresult("grid_list_all[available_locations.pop()]")
+    show (retail-cor)
+    set xcor item 0 retail-cor
+    set ycor item 1 retail-cor
+      ]
+
+   ]
+  if experiment = "4-retailer-even-space" [
+    (py:run
+      "available_locations = [8, 12, 36, 40]"
+     )
+    ask retailers [
+    let retail-cor item 1 py:runresult("grid_list_all[available_locations.pop()]")
+    show (retail-cor)
+    set xcor item 0 retail-cor
+    set ycor item 1 retail-cor
+      ]
+  ]
+
+
+
+
+
+
 end
 
 to-report assign-locations
@@ -216,7 +263,7 @@ to go
   tick
 
 ;  show (word "market-shares: " market-shares-list)
-;  update-customers-preference
+  update-customers-preference
   if ticks >= set-run-day [ stop ]
 end
 
@@ -396,13 +443,13 @@ to calculate-revenue
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-336
-354
+339
+347
 828
-847
+837
 -1
 -1
-12.4
+10.943
 1
 10
 1
@@ -443,7 +490,7 @@ SLIDER
 336
 46
 561
-80
+79
 initial-number-customers
 initial-number-customers
 0
@@ -458,12 +505,12 @@ SLIDER
 336
 94
 562
-128
+127
 initial-number-retailers
 initial-number-retailers
 1
 10
-3.0
+4.0
 1
 1
 NIL
@@ -473,7 +520,7 @@ SLIDER
 337
 140
 564
-174
+173
 unit-cost
 unit-cost
 0
@@ -488,7 +535,7 @@ SWITCH
 56
 140
 283
-174
+173
 show-shop-id?
 show-shop-id?
 0
@@ -534,12 +581,12 @@ SLIDER
 597
 46
 825
-80
+79
 distance-fraction
 distance-fraction
 0
 10
-1.0
+1.6
 0.2
 1
 NIL
@@ -549,12 +596,12 @@ SLIDER
 597
 94
 826
-128
+127
 price-fraction
 price-fraction
 0
 10
-1.0
+8.4
 0.2
 1
 NIL
@@ -564,7 +611,7 @@ SWITCH
 56
 95
 284
-129
+128
 show-chosen-shop?
 show-chosen-shop?
 0
@@ -593,10 +640,10 @@ SWITCH
 596
 226
 825
-260
+259
 randomise-buying-frequency?
 randomise-buying-frequency?
-0
+1
 1
 -1000
 
@@ -604,12 +651,12 @@ SLIDER
 336
 269
 563
-303
+302
 set-evaluation-period-range
 set-evaluation-period-range
 5
 30
-24.0
+19.0
 1
 1
 NIL
@@ -619,7 +666,7 @@ SWITCH
 336
 226
 562
-260
+259
 randomise-evaluation-period?
 randomise-evaluation-period?
 0
@@ -718,12 +765,12 @@ SLIDER
 595
 268
 825
-302
+301
 set-buying-frequency
 set-buying-frequency
 1
 7
-17.0
+2.0
 1
 1
 NIL
@@ -740,10 +787,10 @@ Results
 1
 
 TEXTBOX
-556
-329
-723
-349
+555
+322
+722
+342
 Game
 15
 0.0
@@ -753,12 +800,12 @@ SLIDER
 597
 140
 826
-174
+173
 set-run-day
 set-run-day
 0
 5000
-50.0
+400.0
 50
 1
 NIL
@@ -768,11 +815,11 @@ CHOOSER
 54
 488
 283
-534
+533
 Experiment
 Experiment
-"2-retailer-even-space" "3-retailer-even-space" "4-retailer-even-space"
-0
+"Customised" "2-retailer-even-space" "3-retailer-even-space" "4-retailer-even-space"
+3
 
 @#$#@#$#@
 ## WHAT IS IT?
