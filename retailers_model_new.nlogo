@@ -4,29 +4,67 @@ extensions [
 
 globals [
   market-shares-list
+  current-intersection
+
+  grid-x-inc               ;; the amount of patches in between two roads in the x direction
+  grid-y-inc               ;; the amount of patches in between two roads in the y direction
+
+   ;; patch agentsets
+  intersections ;; agentset containing the patches that are intersections
+  roads         ;; agentset containing the patches that are roads
+
+  grid-list
+  global-grid-list
 ]
 
 breed [customers customer]
 breed [retailers retailer]
 
-customers-own [ consumption-rate preferred-shop buying-frequency ]
-retailers-own [ revenue price market-share evaluation-period price-change previous-market-share quantity-sold ]
+customers-own [
+  consumption-rate
+  preferred-shop
+  buying-frequency
+]
+retailers-own [
+  revenue
+  profit
+  price
+  market-share
+  evaluation-period
+  price-change
+  previous-market-share
+  previous-quantity-sold
+  cumulative-profit
+  quantity-sold
+]
+patches-own [
+  my-row          ;; the row of the intersection counting from the upper left corner of the
+                  ;; world.  -1 for non-intersection patches.
+  my-column       ;; the column of the intersection counting from the upper left corner of the
+                  ;; world.  -1 for non-intersection patches.
+]
+
 
 ; #################################################################### Set UP ############################################################
 to setup
   clear-all
   py:setup py:python
-  ask patches [ set pcolor white ]
+
+; Set up the world
+  setup-globals
+  setup-patches
+  create-grid-dict
+
+; Set up the agents
   setup-retailers
+  assign-retailers-locations
+
   setup-customers
 
 
-  show (word "distance fraction: " distance-fraction)
-  show (word "price fraction: " price-fraction)
-
-  ; Find the nearest shop for each of the initial setting
+  ; Initial Setup for customers' preferences
   update-customers-preferences
-  ; calculate market-shares of each retailer
+  ; Initial market shares distribution
   update-market-shares
 
 
@@ -36,13 +74,47 @@ to setup
   display-labels
   display-chosen-shop-labels
 
-  ask retailers [
-    show (word "ID: " WHO " Price: " price)
-  ]
 
   reset-ticks
 end
 
+to setup-globals
+  set grid-x-inc world-width / 7
+  set grid-y-inc world-height / 7
+end
+
+; Make the patches have appropriate colors, set up the roads and intersections agentsets,
+to setup-patches
+  ;; initialize the patch-owned variables and color the patches to a base-color
+  ask patches
+  [
+    set my-row -1
+    set my-column -1
+    set pcolor 35
+  ]
+
+  ;; initialize the global variables that hold patch agentsets
+  set roads patches with
+    [(floor((pxcor + max-pxcor - floor(grid-x-inc - 1)) mod grid-x-inc) = 0) or
+    (floor((pycor + max-pycor) mod grid-y-inc) = 0)]
+  set intersections roads with
+    [(floor((pxcor + max-pxcor - floor(grid-x-inc - 1)) mod grid-x-inc) = 0) and
+    (floor((pycor + max-pycor) mod grid-y-inc) = 0)]
+
+  ask roads [ set pcolor 7 ]
+  setup-intersections
+end
+
+;; Give the intersections appropriate values for the intersection?, my-row, and my-column
+;; patch variables.  Make all the traffic lights start off so that the lights are red
+;; horizontally and green vertically.
+to setup-intersections
+  ask intersections
+  [
+    set my-row floor((pycor + max-pycor) / grid-y-inc)
+    set my-column floor((pxcor + max-pxcor) / grid-x-inc)
+  ]
+end
 
 to setup-customers
   create-customers initial-number-customers  ; create the wolves, then initialize their variables
@@ -50,28 +122,87 @@ to setup-customers
     set shape "person"
     set size 1  ; easier to see
     setxy random-xcor random-ycor
-    set buying-frequency 1 + random 6
+    ifelse randomise-buying-frequency? [
+      set set-buying-frequency random (set-evaluation-period-range - 1 ) + 1
+    ] [
+      set buying-frequency set-buying-frequency
+    ]
   ]
 end
 
 to setup-retailers
-  create-retailers initial-number-retailers  ; create the wolves, then initialize their variables
+  create-retailers initial-number-retailers  ; Initialise the retailers agents
   [
     set shape "house"
-    set color random 140 + 56
-    set size 3  ; easier to see
+    set color random 140 + 56 ; *** TODO: change the color codes
+    set size 2.5  ; easier to see
     set price ( random-float ( 0.5 * unit-cost ) +  unit-cost )
-    setxy (-12 + random-float 24) (-12 + random-float 24)
-    set evaluation-period 5
+
+;    py:set "grid_list_dict" grid-list
+;    show (word "grid-list: " grid-list)
+
+;    setxy (-16 + random 7 * 5 + 0.5) (16 + random 7 * 5 - 0.5)
+;    setxy (py:runresult("x")) (py:runresult("y"))
+;    set evaluation-period 5
     ifelse randomise-evaluation-period? [
-      set evaluation-period random (evaluation-period-range - 5 ) + 5
+      set evaluation-period random (set-evaluation-period-range - 5 ) + 5
     ] [
-      set evaluation-period evaluation-period-range
+      set evaluation-period set-evaluation-period-range
     ]
-    output-print ( word "Retailer: " WHO " Period: " evaluation-period)
+
+    ifelse randomise-buying-frequency? [
+      set set-buying-frequency random (set-evaluation-period-range - 1 ) + 1
+    ] [
+      set buying-frequency set-buying-frequency
+    ]
+
+    output-print ( word "Retailer: " WHO )
+    output-print ( word "Evaluation Period: " evaluation-period)
+    output-print ( " " )
+
     set quantity-sold 0
   ]
 end
+
+to assign-retailers-locations
+  ask retailers [
+    let coordinates assign-locations
+    set xcor item 0 coordinates
+    set ycor item 1 coordinates
+  ]
+end
+
+to-report assign-locations
+      py:set "grid_list_dict" grid-list
+      (py:run
+      "import random"
+      "grid_list_dict = my_dict = {item[0]: item[1] for item in grid_list_dict}"
+      "grid_id = random.randint(0, 48)"
+;      "print(f'out grid_id: {grid_id}')"
+      "while str(grid_id) not in grid_list_dict:"
+      "    grid_id = random.randint(0, 48)"
+;      "    print(f'duplicated grid_id: {grid_id}')"
+      "grid_id = str(grid_id)"
+      "x, y = grid_list_dict[grid_id]"
+      "del grid_list_dict[grid_id]"
+      )
+  set grid-list py:runresult("grid_list_dict")
+  report py:runresult("[x, y]")
+end
+
+to create-grid-dict
+  (py:run
+    "grid_list = {}"
+    "counter = 0" ; keep track of all the grids in the map
+    "for i in range(7):"
+    "    for j in range(7):"
+    "        grid_list[counter] = (-16 + i * 5 + 0.5, 16 - j *  5 - 0.5)" ; track the grid centre x, y coordinates
+    "        counter += 1"
+    )
+    set grid-list py:runresult("grid_list")
+    set global-grid-list py:runresult("grid_list")
+end
+
 
 ; ############################################################### GO  #######################################################################
 
@@ -80,10 +211,13 @@ to go
   update-market-shares
   buy ; check if customers need to buy
   calculate-revenue ; calculate revenue of each retailer
+  calculate-profit
   evaluate-pricing-strategy
   tick
-  update-customers-preference
-  if ticks >= 10 [ stop ]
+
+;  show (word "market-shares: " market-shares-list)
+;  update-customers-preference
+  if ticks >= set-run-day [ stop ]
 end
 
 ; ############################################################ Labels and Switches ############################################################
@@ -123,7 +257,7 @@ end
 to update-customers-preferences
     ask customers [
     set preferred-shop calculate-weighted-preferance XCOR YCOR WHO
-;    show (word WHO " customer goes to " preferred-shop)
+
   ]
 end
 
@@ -148,7 +282,7 @@ to-report calculate-weighted-preferance [ _XCOR _YCOR _WHO ]
 end
 
 
-
+; Calculate distance helper function
 to-report calculate-distance [ _XCOR _YCOR _WHO]
   py:set "_WHO" _WHO
   py:set "retailers" retailers
@@ -183,10 +317,9 @@ to update-market-shares
   set market-shares-list markets-shares-count
 
   ask retailers [
-    let retail-share-count get-update-market-share who markets-shares-count
-;    show (word "Retail ID: " who " count: " retail-share-count)
+;    let retail-share-count get-update-market-share who markets-shares-count
     set previous-market-share market-share
-    set market-share retail-share-count
+    set market-share get-update-market-share who markets-shares-count
   ]
 end
 
@@ -214,27 +347,23 @@ to evaluate-pricing-strategy
     ]
 
     ask retailers [
-      ifelse market-share < py:runresult "max_market_share" and price - price-change > unit-cost
+      if market-share < py:runresult "max_market_share"
       [
         set price-change random-float 2
-        show (word "price change: -" price-change)
-        show (word "original price: " price)
-        set price ( price - price-change )
-        show (word "updated price: " price)
-        show (word "")
-      ]
-      [
+
+        while [price - price-change < unit-cost] [ ; Update the price-change until retailer earns money
+          set price-change random-float 2
+        ]
+        set price ( price - price-change)] ; Update new price
+
         if market-share >= previous-market-share
         [
           set price-change random-float 2
-          show (word "max price change: " price-change)
-          show (word "max original price: " price)
           set price ( price + price-change )
-          show (word "max updated price: " price)
-          show (word "")
         ]
-      ]
+
     ]
+    set quantity-sold 0 ; Reset quantity-sold for next evaluation period
   ]
 end
 
@@ -245,9 +374,18 @@ to buy
       ask retailers [
         if WHO = preferr_shop [
           set quantity-sold ( quantity-sold + 1 )
+          set cumulative-profit (cumulative-profit + price - unit-cost)
         ]
       ]
     ]
+  ]
+end
+
+
+
+to calculate-profit
+  ask retailers [
+    set profit ( quantity-sold * (price - unit-cost))
   ]
 end
 
@@ -256,21 +394,15 @@ to calculate-revenue
     set revenue ( quantity-sold * price )
   ]
 end
-
-
-
-
-
-
 @#$#@#$#@
 GRAPHICS-WINDOW
-1029
-50
-1812
-834
+336
+354
+828
+847
 -1
 -1
-23.5
+12.4
 1
 10
 1
@@ -280,10 +412,10 @@ GRAPHICS-WINDOW
 1
 1
 1
--16
-16
--16
-16
+-17
+17
+-17
+17
 0
 0
 1
@@ -291,10 +423,10 @@ ticks
 30.0
 
 BUTTON
-447
-69
-513
-102
+55
+49
+160
+83
 NIL
 setup
 NIL
@@ -308,14 +440,14 @@ NIL
 1
 
 SLIDER
-439
-144
-662
-177
+336
+46
+561
+80
 initial-number-customers
 initial-number-customers
 0
-1000
+100
 50.0
 1
 1
@@ -323,10 +455,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-439
-182
-656
-215
+336
+94
+562
+128
 initial-number-retailers
 initial-number-retailers
 1
@@ -338,25 +470,25 @@ NIL
 HORIZONTAL
 
 SLIDER
-697
-146
-869
-179
+337
+140
+564
+174
 unit-cost
 unit-cost
 0
 100
-35.0
+39.0
 1
 1
 NIL
 HORIZONTAL
 
 SWITCH
-715
-191
-866
-224
+56
+140
+283
+174
 show-shop-id?
 show-shop-id?
 0
@@ -364,13 +496,13 @@ show-shop-id?
 -1000
 
 PLOT
-446
-334
-983
-662
-plot 1
-NIL
-NIL
+888
+249
+1663
+434
+Price
+Day
+Price $
 0.0
 10.0
 0.0
@@ -379,12 +511,13 @@ true
 true
 "" "ask retailers [\n  create-temporary-plot-pen (word who)\n  set-plot-pen-color color\n  plotxy ticks price\n]"
 PENS
+"Unit Cost" 1.0 0 -2674135 true "" "plotxy ticks unit-cost"
 
 BUTTON
-560
-73
-623
-106
+177
+48
+281
+82
 go
 go
 T
@@ -398,40 +531,40 @@ NIL
 1
 
 SLIDER
-439
-224
-611
-257
+597
+46
+825
+80
 distance-fraction
 distance-fraction
 0
 10
-2.0
+1.0
 0.2
 1
 NIL
 HORIZONTAL
 
 SLIDER
-439
-266
-611
-299
+597
+94
+826
+128
 price-fraction
 price-fraction
 0
 10
-2.0
+1.0
 0.2
 1
 NIL
 HORIZONTAL
 
 SWITCH
-715
-229
-900
-262
+56
+95
+284
+129
 show-chosen-shop?
 show-chosen-shop?
 0
@@ -439,13 +572,13 @@ show-chosen-shop?
 -1000
 
 PLOT
-448
-679
-983
-983
+890
+45
+1665
+231
 plot market share
-NIL
-Market-Share-Percentage
+Day
+MarketShare %
 0.0
 10.0
 0.0
@@ -454,26 +587,26 @@ true
 true
 "" "ask retailers [\n    create-temporary-plot-pen (word who)\n    set-plot-pen-color color\n    let market-share-percent (market-share / count customers)\n    plotxy ticks market-share-percent\n    \n]"
 PENS
-"Equilibrium" 1.0 0 -2674135 true "" "plotxy ticks (1 / count retailers)"
+"Balanced Market" 1.0 0 -2674135 true "" "plotxy ticks (1 / count retailers)"
 
 SWITCH
-121
-211
-365
-244
-Randomise-Buying-Frequency
-Randomise-Buying-Frequency
-1
+596
+226
+825
+260
+randomise-buying-frequency?
+randomise-buying-frequency?
+0
 1
 -1000
 
 SLIDER
-182
-128
-388
-161
-evaluation-period-range
-evaluation-period-range
+336
+269
+563
+303
+set-evaluation-period-range
+set-evaluation-period-range
 5
 30
 24.0
@@ -483,10 +616,10 @@ NIL
 HORIZONTAL
 
 SWITCH
-166
-93
-412
-126
+336
+226
+562
+260
 randomise-evaluation-period?
 randomise-evaluation-period?
 0
@@ -494,17 +627,17 @@ randomise-evaluation-period?
 -1000
 
 OUTPUT
-163
-385
-410
-555
+56
+189
+283
+455
 13
 
 PLOT
-263
-992
-980
-1165
+2039
+778
+2443
+898
 plot revenue_1
 NIL
 NIL
@@ -516,6 +649,130 @@ true
 true
 "" "ask retailers [\n    create-temporary-plot-pen (word who)\n    set-plot-pen-color color\n    plotxy ticks revenue\n]"
 PENS
+
+PLOT
+889
+450
+1664
+635
+Profit
+Day
+Profit $
+0.0
+10.0
+0.0
+10.0
+true
+true
+"" "ask retailers [\n    create-temporary-plot-pen (word who)\n    set-plot-pen-color color\n    plotxy ticks profit\n]"
+PENS
+
+PLOT
+890
+653
+1665
+839
+Cumulative Profit
+Day
+Profit $
+0.0
+10.0
+0.0
+10.0
+true
+true
+"" "ask retailers [\n    create-temporary-plot-pen (word who)\n    set-plot-pen-color color\n    plotxy ticks cumulative-profit\n]"
+PENS
+
+TEXTBOX
+537
+12
+704
+32
+Parameters
+15
+0.0
+1
+
+TEXTBOX
+499
+193
+666
+213
+Advanced Parameters
+15
+0.0
+1
+
+TEXTBOX
+144
+18
+311
+38
+Set Up
+15
+0.0
+1
+
+SLIDER
+595
+268
+825
+302
+set-buying-frequency
+set-buying-frequency
+1
+7
+17.0
+1
+1
+NIL
+HORIZONTAL
+
+TEXTBOX
+1240
+15
+1407
+35
+Results
+15
+0.0
+1
+
+TEXTBOX
+556
+329
+723
+349
+Game
+15
+0.0
+1
+
+SLIDER
+597
+140
+826
+174
+set-run-day
+set-run-day
+0
+5000
+50.0
+50
+1
+NIL
+HORIZONTAL
+
+CHOOSER
+54
+488
+283
+534
+Experiment
+Experiment
+"2-retailer-even-space" "3-retailer-even-space" "4-retailer-even-space"
+0
 
 @#$#@#$#@
 ## WHAT IS IT?
