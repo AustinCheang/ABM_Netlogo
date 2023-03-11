@@ -298,6 +298,7 @@ to-report calculate-distance [ _XCOR _YCOR _WHO]
   report py:runresult "distances"
 end
 
+
 ; Calculate market-shares
 to update-market-shares
   py:set "num_retailers" count retailers
@@ -376,6 +377,8 @@ to buy
     ]
   ]
 end
+
+
 
 to calculate-profit
   ask retailers [
