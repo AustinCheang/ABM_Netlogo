@@ -49,4 +49,4 @@
 4. `4-retailer-even-space` - Pre-defined 4 retailers with equally spaced in the game
 
 ** The game grid is defined as follow: **
-!(Game grid)[readme_img/grid.png]
+![Game grid][readme_img/grid.png]
