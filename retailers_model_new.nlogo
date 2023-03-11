@@ -123,7 +123,7 @@ to setup-customers
     set size 1  ; easier to see
     setxy random-xcor random-ycor
     ifelse randomise-buying-frequency? [
-      set set-buying-frequency random (set-evaluation-period-range - 1 ) + 1
+      set buying-frequency random ( set-buying-frequency - 1) + 1
     ] [
       set buying-frequency set-buying-frequency
     ]
@@ -160,7 +160,8 @@ to setup-retailers
       set evaluation-period set-evaluation-period-range
     ]
 
-    output-print ( word "Retailer: " WHO )
+    output-print ( word "Retailer: " WHO)
+    output-print ( word "Initial Price: " precision price 0.01 )
     output-print ( word "Evaluation Period: " evaluation-period)
     output-print ( " " )
 
@@ -443,13 +444,13 @@ to calculate-revenue
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-339
-347
-828
-837
+337
+346
+823
+833
 -1
 -1
-10.943
+13.66
 1
 10
 1
@@ -510,7 +511,7 @@ initial-number-retailers
 initial-number-retailers
 1
 10
-4.0
+3.0
 1
 1
 NIL
@@ -601,7 +602,7 @@ price-fraction
 price-fraction
 0
 10
-8.4
+3.2
 0.2
 1
 NIL
@@ -643,7 +644,7 @@ SWITCH
 259
 randomise-buying-frequency?
 randomise-buying-frequency?
-1
+0
 1
 -1000
 
@@ -770,7 +771,7 @@ set-buying-frequency
 set-buying-frequency
 1
 7
-2.0
+6.0
 1
 1
 NIL
@@ -812,14 +813,32 @@ NIL
 HORIZONTAL
 
 CHOOSER
-54
-488
-283
-533
+53
+655
+282
+700
 Experiment
 Experiment
 "Customised" "2-retailer-even-space" "3-retailer-even-space" "4-retailer-even-space"
-3
+0
+
+PLOT
+57
+469
+283
+629
+Buying-Frequency Distribution
+Buying-Frequency
+#
+0.0
+7.0
+0.0
+10.0
+true
+false
+"" ""
+PENS
+"buying-freq" 1.0 1 -14070903 true "" "set-plot-y-range 0 7\nhistogram [buying-frequency] of customers"
 
 @#$#@#$#@
 ## WHAT IS IT?
