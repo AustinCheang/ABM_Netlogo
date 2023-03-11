@@ -8,19 +8,19 @@
 
 ### Set up
 
-- `setup` - Set up the game with paramised values
-- `go` - Run the game until the tick is stopped
-- `show-chosen-shop` - Display the current customer's retailer preference
-- `show-shop-id` - Display the retailer ID
+- `setup` (Button) - Set up the game with paramised values
+- `go` (Button) - Run the game until the tick is stopped
+- `show-chosen-shop` (Switch) - Display the current customer's retailer preference
+- `show-shop-id` (Switch) - Display the retailer ID
 
 ### Basic parameters setup include:
 
-- `inital-number-customers`: Number of customers
-- `initial-number-retailers`: Number of retailers
-- `unit-cost`: Cost of a product
-- `distance-fraction`: Sensitivity of distance between customer and retailer shop
-- `price-fraction`: Sentitivity of price between retailers
-- `set-run-day`: Number of days to run the experiment
+- `inital-number-customers` (Slider) - Number of customers
+- `initial-number-retailers` (Slider) - Number of retailers
+- `unit-cost` (Slider) - Cost of a product
+- `distance-fraction` (Slider) - Sensitivity of distance between customer and retailer shop
+- `price-fraction` (Slider) - Sentitivity of price between retailers
+- `set-run-day` (Slider) - Number of days to run the experiment
 
 ### Advanced parameters setup include:
 
