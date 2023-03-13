@@ -453,6 +453,17 @@ GRAPHICS-WINDOW
 ticks
 30.0
 
+MONITOR
+0
+0
+0
+0
+NIL
+NIL
+17
+1
+11
+
 BUTTON
 55
 49
@@ -754,7 +765,7 @@ set-buying-frequency
 set-buying-frequency
 1
 7
-1.0
+2.0
 1
 1
 NIL
