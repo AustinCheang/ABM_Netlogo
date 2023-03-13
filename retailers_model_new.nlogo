@@ -388,6 +388,7 @@ to evaluate-pricing-strategy
       py:set "market_shares_list" market-shares-list
       (py:run
         "max_market_share = max(x[1] for x in market_shares_list)"
+        "print('max_market_share: ', max_market_share)"
       )]
     show (market-shares-list)
     show price
@@ -412,14 +413,15 @@ to evaluate-pricing-strategy
 
 
     ifelse market-share >= py:runresult "max_market_share"
-    [ set price-change random-float 2
+    [
+      set price-change random-float 2
       set price (price + price-change)
     ]
     [
       set old-price price
       set price-change random-float 0.5
       set price unit-cost
-      while [price <= old-price]
+      while [price + price-change <= old-price]
       [
         set price-change random-float 0.5
 ;        show (word "price-change: " price-change)
@@ -542,7 +544,7 @@ initial-number-retailers
 initial-number-retailers
 1
 10
-3.0
+2.0
 1
 1
 NIL
@@ -851,7 +853,7 @@ CHOOSER
 Experiment
 Experiment
 "Customised" "2-retailer-even-space" "3-retailer-even-space" "4-retailer-even-space"
-0
+1
 
 PLOT
 57
