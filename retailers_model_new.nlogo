@@ -6,12 +6,12 @@ globals [
   market-shares-list
   current-intersection
 
-  grid-x-inc               ;; the amount of patches in between two roads in the x direction
-  grid-y-inc               ;; the amount of patches in between two roads in the y direction
+  grid-x-inc               ; the amount of patches in between two roads in the x direction
+  grid-y-inc               ; the amount of patches in between two roads in the y direction
 
-   ;; patch agentsets
-  intersections ;; agentset containing the patches that are intersections
-  roads         ;; agentset containing the patches that are roads
+   ; patch agentsets
+  intersections ; agentset containing the patches that are intersections
+  roads         ; agentset containing the patches that are roads
 
   grid-list
   global-grid-list
@@ -21,12 +21,12 @@ breed [customers customer]
 breed [retailers retailer]
 
 customers-own [
-  consumption-rate
+;  consumption-rate
   preferred-shop
   buying-frequency
 ]
 retailers-own [
-  revenue
+;  revenue
   profit
   price
   market-share
@@ -38,10 +38,10 @@ retailers-own [
   quantity-sold
 ]
 patches-own [
-  my-row          ;; the row of the intersection counting from the upper left corner of the
-                  ;; world.  -1 for non-intersection patches.
-  my-column       ;; the column of the intersection counting from the upper left corner of the
-                  ;; world.  -1 for non-intersection patches.
+  my-row          ; the row of the intersection counting from the upper left corner of the
+                  ; world.  -1 for non-intersection patches.
+  my-column       ; the column of the intersection counting from the upper left corner of the
+                  ; world.  -1 for non-intersection patches.
 ]
 
 
@@ -61,9 +61,9 @@ to setup
 
   setup-customers
 
-
   ; Initial Setup for customers' preferences
   update-customers-preferences
+
   ; Initial market shares distribution
   update-market-shares
 
@@ -73,7 +73,6 @@ to setup
 
   display-labels
   display-chosen-shop-labels
-
 
   reset-ticks
 end
@@ -85,7 +84,7 @@ end
 
 ; Make the patches have appropriate colors, set up the roads and intersections agentsets,
 to setup-patches
-  ;; initialize the patch-owned variables and color the patches to a base-color
+  ; initialize the patch-owned variables and color the patches to a base-color
   ask patches
   [
     set my-row -1
@@ -93,7 +92,7 @@ to setup-patches
     set pcolor 35
   ]
 
-  ;; initialize the global variables that hold patch agentsets
+  ; initialize the global variables that hold patch agentsets
   set roads patches with
     [(floor((pxcor + max-pxcor - floor(grid-x-inc - 1)) mod grid-x-inc) = 0) or
     (floor((pycor + max-pycor) mod grid-y-inc) = 0)]
@@ -105,9 +104,7 @@ to setup-patches
   setup-intersections
 end
 
-;; Give the intersections appropriate values for the intersection?, my-row, and my-column
-;; patch variables.  Make all the traffic lights start off so that the lights are red
-;; horizontally and green vertically.
+; Give the intersections appropriate values for the intersection?, my-row, and my-column patch variables.
 to setup-intersections
   ask intersections
   [
@@ -117,7 +114,7 @@ to setup-intersections
 end
 
 to setup-customers
-  create-customers initial-number-customers  ; create the wolves, then initialize their variables
+  create-customers initial-number-customers  ; create customers, then initialize their variables
   [
     set shape "person"
     set size 1  ; easier to see
@@ -144,17 +141,18 @@ to setup-retailers
 ;    setxy (-16 + random 7 * 5 + 0.5) (16 + random 7 * 5 - 0.5)
 ;    setxy (py:runresult("x")) (py:runresult("y"))
 ;    set evaluation-period 5
+
     ifelse randomise-evaluation-period? [
       set evaluation-period random (set-evaluation-period-range - 5 ) + 5
     ] [
       set evaluation-period set-evaluation-period-range
     ]
 
-    ifelse randomise-buying-frequency? [
-      set set-buying-frequency random (set-evaluation-period-range - 1 ) + 1
-    ] [
-      set buying-frequency set-buying-frequency
-    ]
+;    ifelse randomise-buying-frequency? [
+;      set set-buying-frequency random (set-evaluation-period-range - 1 ) + 1
+;    ] [
+;      set buying-frequency set-buying-frequency
+;    ]
 
     output-print ( word "Retailer: " WHO )
     output-print ( word "Evaluation Period: " evaluation-period)
@@ -210,13 +208,13 @@ to go
   update-customers-preferences
   update-market-shares
   buy ; check if customers need to buy
-  calculate-revenue ; calculate revenue of each retailer
+;  calculate-revenue ; calculate revenue of each retailer
   calculate-profit
   evaluate-pricing-strategy
   tick
 
 ;  show (word "market-shares: " market-shares-list)
-;  update-customers-preference
+  update-customers-preference
   if ticks >= set-run-day [ stop ]
 end
 
@@ -256,12 +254,12 @@ end
 
 to update-customers-preferences
     ask customers [
-    set preferred-shop calculate-weighted-preferance XCOR YCOR WHO
+    set preferred-shop calculate-weighted-preference XCOR YCOR WHO
 
   ]
 end
 
-to-report calculate-weighted-preferance [ _XCOR _YCOR _WHO ]
+to-report calculate-weighted-preference [ _XCOR _YCOR _WHO ]
   py:set "_WHO" _WHO
   py:set "retailers" retailers
   py:set "XCOR" _XCOR
@@ -281,7 +279,6 @@ to-report calculate-weighted-preferance [ _XCOR _YCOR _WHO ]
   report py:runresult "choice"
 end
 
-
 ; Calculate distance helper function
 to-report calculate-distance [ _XCOR _YCOR _WHO]
   py:set "_WHO" _WHO
@@ -300,7 +297,6 @@ to-report calculate-distance [ _XCOR _YCOR _WHO]
 
   report py:runresult "distances"
 end
-
 
 ; Calculate market-shares
 to update-market-shares
@@ -343,28 +339,60 @@ to evaluate-pricing-strategy
       py:set "market_shares_list" market-shares-list
       (py:run
         "max_market_share = max(x[1] for x in market_shares_list)"
-      )
-    ]
+      )]
+    show (market-shares-list)
+    show price
 
-    ask retailers [
+;    ifelse market-share >= py:runresult "max_market_share"
+;    [ set price-change random-float 2
+;      set price (price + price-change)
+;    ]
+;    [
+;;      set price-change random-float 2
+;;      let new-price precision (price - price-change) 2
+;;      while [ new-price <= unit-cost][
+;;       show (word "new-price: " new-price)
+;;        set price-change random-float 0.1
+;;        set new-price precision (price - price-change) 2
+;;        set
+;      ]
+;      set price (unit-cost + random-float 1)
+;    ]
+;    ]
+;
+;    ifelse market-share >= py:runresult "max_market_share"
+;    [ set price-change random-float 2
+;      set price (price + price-change)
+;    ]
+;    [
+;      set price-change random-float 2
+;      set price (price - price-change)
+;      while [price - 0.01 <= unit-cost]
+;      [
+;        set price-change random-float (price - unit-cost)
+;;        show (word "price-change: " price-change)
+;        set price (price - price-change)
+;      ]
+;    ]
+      ; Lower the price to get more customers
       if market-share < py:runresult "max_market_share"
       [
-        set price-change random-float 2
+        set price-change random-float 1 + 1
 
         while [price - price-change < unit-cost] [ ; Update the price-change until retailer earns money
-          set price-change random-float 2
+          set price-change random-float 0.5
         ]
         set price ( price - price-change)] ; Update new price
-
-        if market-share >= previous-market-share
+      ; Although lower the cost close to unit-cost, retailer still want to make small bit of money once they see a little growth of market share
+      if market-share >= previous-market-share
         [
-          set price-change random-float 2
+          set price-change random-float 0.5
           set price ( price + price-change )
         ]
-
-    ]
     set quantity-sold 0 ; Reset quantity-sold for next evaluation period
-  ]
+
+]
+
 end
 
 to buy
@@ -381,25 +409,23 @@ to buy
   ]
 end
 
-
-
 to calculate-profit
   ask retailers [
     set profit ( quantity-sold * (price - unit-cost))
   ]
 end
 
-to calculate-revenue
-  ask retailers [
-    set revenue ( quantity-sold * price )
-  ]
-end
+;to calculate-revenue
+;  ask retailers [
+;    set revenue ( quantity-sold * price )
+;  ]
+;end
 @#$#@#$#@
 GRAPHICS-WINDOW
 336
 354
-828
-847
+778
+797
 -1
 -1
 12.4
@@ -443,12 +469,12 @@ SLIDER
 336
 46
 561
-80
+79
 initial-number-customers
 initial-number-customers
 0
 100
-50.0
+100.0
 1
 1
 NIL
@@ -458,7 +484,7 @@ SLIDER
 336
 94
 562
-128
+127
 initial-number-retailers
 initial-number-retailers
 1
@@ -473,12 +499,12 @@ SLIDER
 337
 140
 564
-174
+173
 unit-cost
 unit-cost
 0
 100
-39.0
+30.0
 1
 1
 NIL
@@ -488,7 +514,7 @@ SWITCH
 56
 140
 283
-174
+173
 show-shop-id?
 show-shop-id?
 0
@@ -534,12 +560,12 @@ SLIDER
 597
 46
 825
-80
+79
 distance-fraction
 distance-fraction
 0
 10
-1.0
+0.8
 0.2
 1
 NIL
@@ -549,12 +575,12 @@ SLIDER
 597
 94
 826
-128
+127
 price-fraction
 price-fraction
 0
 10
-1.0
+2.8
 0.2
 1
 NIL
@@ -564,7 +590,7 @@ SWITCH
 56
 95
 284
-129
+128
 show-chosen-shop?
 show-chosen-shop?
 0
@@ -593,7 +619,7 @@ SWITCH
 596
 226
 825
-260
+259
 randomise-buying-frequency?
 randomise-buying-frequency?
 0
@@ -604,12 +630,12 @@ SLIDER
 336
 269
 563
-303
+302
 set-evaluation-period-range
 set-evaluation-period-range
 5
 30
-24.0
+30.0
 1
 1
 NIL
@@ -619,7 +645,7 @@ SWITCH
 336
 226
 562
-260
+259
 randomise-evaluation-period?
 randomise-evaluation-period?
 0
@@ -718,12 +744,12 @@ SLIDER
 595
 268
 825
-302
+301
 set-buying-frequency
 set-buying-frequency
 1
 7
-17.0
+9.0
 1
 1
 NIL
@@ -753,12 +779,12 @@ SLIDER
 597
 140
 826
-174
+173
 set-run-day
 set-run-day
 0
 5000
-50.0
+200.0
 50
 1
 NIL
@@ -768,11 +794,11 @@ CHOOSER
 54
 488
 283
-534
+533
 Experiment
 Experiment
 "2-retailer-even-space" "3-retailer-even-space" "4-retailer-even-space"
-0
+1
 
 @#$#@#$#@
 ## WHAT IS IT?
