@@ -8,7 +8,12 @@ globals [
 
   grid-x-inc               ; the amount of patches in between two roads in the x direction
   grid-y-inc               ; the amount of patches in between two roads in the y direction
+  grid-x-inc               ; the amount of patches in between two roads in the x direction
+  grid-y-inc               ; the amount of patches in between two roads in the y direction
 
+   ; patch agentsets
+  intersections ; agentset containing the patches that are intersections
+  roads         ; agentset containing the patches that are roads
    ; patch agentsets
   intersections ; agentset containing the patches that are intersections
   roads         ; agentset containing the patches that are roads
@@ -22,10 +27,12 @@ breed [retailers retailer]
 
 customers-own [
 ;  consumption-rate
+;  consumption-rate
   preferred-shop
   buying-frequency
 ]
 retailers-own [
+;  revenue
 ;  revenue
   profit
   price
@@ -36,8 +43,13 @@ retailers-own [
   previous-quantity-sold
   cumulative-profit
   quantity-sold
+  old-price
 ]
 patches-own [
+  my-row          ; the row of the intersection counting from the upper left corner of the
+                  ; world.  -1 for non-intersection patches.
+  my-column       ; the column of the intersection counting from the upper left corner of the
+                  ; world.  -1 for non-intersection patches.
   my-row          ; the row of the intersection counting from the upper left corner of the
                   ; world.  -1 for non-intersection patches.
   my-column       ; the column of the intersection counting from the upper left corner of the
@@ -64,6 +76,7 @@ to setup
   ; Initial Setup for customers' preferences
   update-customers-preferences
 
+
   ; Initial market shares distribution
   update-market-shares
 
@@ -84,6 +97,7 @@ end
 
 ; Make the patches have appropriate colors, set up the roads and intersections agentsets,
 to setup-patches
+  ; initialize the patch-owned variables and color the patches to a base-color
   ; initialize the patch-owned variables and color the patches to a base-color
   ask patches
   [
@@ -115,12 +129,13 @@ end
 
 to setup-customers
   create-customers initial-number-customers  ; create customers, then initialize their variables
+  create-customers initial-number-customers  ; create customers, then initialize their variables
   [
     set shape "person"
     set size 1  ; easier to see
     setxy random-xcor random-ycor
     ifelse randomise-buying-frequency? [
-      set set-buying-frequency random (set-evaluation-period-range - 1 ) + 1
+      set buying-frequency random ( set-buying-frequency - 1) + 1
     ] [
       set buying-frequency set-buying-frequency
     ]
@@ -128,6 +143,16 @@ to setup-customers
 end
 
 to setup-retailers
+  if experiment = "2-retailer-even-space" [
+    set initial-number-retailers 2
+  ]
+  if experiment = "3-retailer-even-space" [
+    set initial-number-retailers 3
+  ]
+  if experiment = "4-retailer-even-space" [
+    set initial-number-retailers 4
+  ]
+
   create-retailers initial-number-retailers  ; Initialise the retailers agents
   [
     set shape "house"
@@ -148,11 +173,11 @@ to setup-retailers
       set evaluation-period set-evaluation-period-range
     ]
 
-;    ifelse randomise-buying-frequency? [
-;      set set-buying-frequency random (set-evaluation-period-range - 1 ) + 1
-;    ] [
-;      set buying-frequency set-buying-frequency
-;    ]
+    ifelse randomise-buying-frequency? [
+      set set-buying-frequency random (set-evaluation-period-range - 1 ) + 1
+    ] [
+      set buying-frequency set-buying-frequency
+    ]
 
     output-print ( word "Retailer: " WHO )
     output-print ( word "Evaluation Period: " evaluation-period)
@@ -163,11 +188,54 @@ to setup-retailers
 end
 
 to assign-retailers-locations
-  ask retailers [
+  py:set "grid_list_all" grid-list
+  if experiment = "Customised" [
+    ask retailers [
     let coordinates assign-locations
     set xcor item 0 coordinates
     set ycor item 1 coordinates
   ]
+  ]
+   if experiment = "2-retailer-even-space" [
+    (py:run
+      "available_locations = [22, 26]"
+    )
+    ask retailers [
+    let retail-cor item 1 py:runresult("grid_list_all[available_locations.pop()]")
+    show (retail-cor)
+    set xcor item 0 retail-cor
+    set ycor item 1 retail-cor
+      ]
+  ]
+  if experiment = "3-retailer-even-space" [
+    (py:run
+      "available_locations = [22, 12, 40]"
+     )
+    ask retailers [
+    let retail-cor item 1 py:runresult("grid_list_all[available_locations.pop()]")
+    show (retail-cor)
+    set xcor item 0 retail-cor
+    set ycor item 1 retail-cor
+      ]
+
+   ]
+  if experiment = "4-retailer-even-space" [
+    (py:run
+      "available_locations = [8, 12, 36, 40]"
+     )
+    ask retailers [
+    let retail-cor item 1 py:runresult("grid_list_all[available_locations.pop()]")
+    show (retail-cor)
+    set xcor item 0 retail-cor
+    set ycor item 1 retail-cor
+      ]
+  ]
+
+
+
+
+
+
 end
 
 to-report assign-locations
@@ -214,7 +282,7 @@ to go
   tick
 
 ;  show (word "market-shares: " market-shares-list)
-;  update-customers-preference
+  update-customers-preference
   if ticks >= set-run-day [ stop ]
 end
 
@@ -339,28 +407,66 @@ to evaluate-pricing-strategy
       py:set "market_shares_list" market-shares-list
       (py:run
         "max_market_share = max(x[1] for x in market_shares_list)"
-      )
-    ]
+        "print('max_market_share: ', max_market_share)"
+      )]
+    show (market-shares-list)
+    show price
 
-    ask retailers [
-      if market-share < py:runresult "max_market_share"
+;    ifelse market-share >= py:runresult "max_market_share"
+;    [ set price-change random-float 2
+;      set price (price + price-change)
+;    ]
+;    [
+;;      set price-change random-float 2
+;;      let new-price precision (price - price-change) 2
+;;      while [ new-price <= unit-cost][
+;;       show (word "new-price: " new-price)
+;;        set price-change random-float 0.1
+;;        set new-price precision (price - price-change) 2
+;;        set
+;      ]
+;      set price (unit-cost + random-float 1)
+;    ]
+;    ]
+;
+
+
+    ifelse market-share >= py:runresult "max_market_share"
+    [
+      set price-change random-float 2
+      set price (price + price-change)
+    ]
+    [
+      set old-price price
+      set price-change random-float 0.5
+      set price unit-cost
+      while [price + price-change <= old-price]
       [
-        set price-change random-float 2
-
-        while [price - price-change < unit-cost] [ ; Update the price-change until retailer earns money
-          set price-change random-float 2
-        ]
-        set price ( price - price-change)] ; Update new price
-
-        if market-share >= previous-market-share
-        [
-          set price-change random-float 2
-          set price ( price + price-change )
-        ]
-
+        set price-change random-float 0.5
+;        show (word "price-change: " price-change)
+        set price (price + price-change)
+      ]
     ]
-    set quantity-sold 0 ; Reset quantity-sold for next evaluation period
-  ]
+
+;      ; Lower the price to get more customers
+;      if market-share < py:runresult "max_market_share"
+;      [
+;        set price-change random-float 1 + 1
+;
+;        while [price - price-change < unit-cost] [ ; Update the price-change until retailer earns money
+;          set price-change random-float 0.5
+;        ]
+;        set price ( price - price-change)] ; Update new price
+;      ; Although lower the cost close to unit-cost, retailer still want to make small bit of money once they see a little growth of market share
+;      if market-share >= previous-market-share
+;        [
+;          set price-change random-float 0.5
+;          set price ( price + price-change )
+;        ]
+;    set quantity-sold 0 ; Reset quantity-sold for next evaluation perio
+
+]
+
 end
 
 to buy
@@ -390,13 +496,13 @@ end
 ;end
 @#$#@#$#@
 GRAPHICS-WINDOW
-336
-354
-778
-797
+337
+346
+823
+833
 -1
 -1
-12.4
+13.66
 1
 10
 1
@@ -442,7 +548,7 @@ initial-number-customers
 initial-number-customers
 0
 100
-50.0
+100.0
 1
 1
 NIL
@@ -457,7 +563,7 @@ initial-number-retailers
 initial-number-retailers
 1
 10
-3.0
+2.0
 1
 1
 NIL
@@ -533,7 +639,7 @@ distance-fraction
 distance-fraction
 0
 10
-1.0
+1.6
 0.2
 1
 NIL
@@ -548,7 +654,7 @@ price-fraction
 price-fraction
 0
 10
-1.0
+3.2
 0.2
 1
 NIL
@@ -603,7 +709,7 @@ set-evaluation-period-range
 set-evaluation-period-range
 5
 30
-24.0
+19.0
 1
 1
 NIL
@@ -616,7 +722,7 @@ SWITCH
 259
 randomise-evaluation-period?
 randomise-evaluation-period?
-0
+1
 1
 -1000
 
@@ -717,7 +823,7 @@ set-buying-frequency
 set-buying-frequency
 1
 7
-22.0
+1.0
 1
 1
 NIL
@@ -734,10 +840,10 @@ Results
 1
 
 TEXTBOX
-556
-329
-723
-349
+555
+322
+722
+342
 Game
 15
 0.0
@@ -752,7 +858,7 @@ set-run-day
 set-run-day
 0
 5000
-50.0
+400.0
 50
 1
 NIL
@@ -762,11 +868,29 @@ CHOOSER
 54
 488
 283
-533
+534
 Experiment
 Experiment
-"2-retailer-even-space" "3-retailer-even-space" "4-retailer-even-space"
-0
+"Customised" "2-retailer-even-space" "3-retailer-even-space" "4-retailer-even-space"
+1
+
+PLOT
+57
+469
+283
+629
+Buying-Frequency Distribution
+Buying-Frequency
+#
+0.0
+7.0
+0.0
+10.0
+true
+false
+"" ""
+PENS
+"buying-freq" 1.0 1 -14070903 true "" "set-plot-y-range 0 7\nhistogram [buying-frequency] of customers"
 
 @#$#@#$#@
 ## WHAT IS IT?
