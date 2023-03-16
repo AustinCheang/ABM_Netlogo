@@ -324,7 +324,7 @@ to-report calculate-weighted-preference [ _XCOR _YCOR _WHO ]
     "for retailer in retailers:"
     "    distance = math.sqrt((XCOR - retailer['XCOR']) ** 2 + (YCOR - retailer['YCOR']) ** 2)"
     "    fractional_price=(retailer['PRICE']-unit_cost)/(100-unit_cost)"
-    "    fractional_distance=distance/23"
+    "    fractional_distance=distance/34"
     "    weighted_sum = dist_fraction * fractional_distance + price_fraction * fractional_price"
     "    choices[retailer['WHO']] = weighted_sum"
 
@@ -334,10 +334,9 @@ to-report calculate-weighted-preference [ _XCOR _YCOR _WHO ]
     "    if n == min_weighted_sum:"
     "        min_list.append(m)"
 
-    "choice=choice(min_list)"
-;    "choice = min(choices, key=choices.get) "
+    "final_choice = choice(min_list)"
   )
-  report py:runresult "choice"
+  report py:runresult "final_choice"
 end
 
 ; Calculate distance helper function
@@ -647,7 +646,7 @@ price-fraction
 price-fraction
 0
 10
-1.0
+4.8
 0.2
 1
 NIL
