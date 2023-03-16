@@ -264,7 +264,7 @@ to go
 
 ;  show (word "market-shares: " market-shares-list)
   update-customers-preference
-  if ticks >= set-run-day [ stop ]
+;  if ticks >= set-run-day [ stop ]
 end
 
 ; ############################################################ Labels and Switches ############################################################
@@ -315,15 +315,27 @@ to-report calculate-weighted-preference [ _XCOR _YCOR _WHO ]
   py:set "YCOR" _YCOR
   py:set "dist_fraction" distance-fraction
   py:set "price_fraction" price-fraction
+  py:set "unit_cost" unit-cost
 
   (py:run
     "import math"
+    "from random import choice"
     "choices = {}"
     "for retailer in retailers:"
     "    distance = math.sqrt((XCOR - retailer['XCOR']) ** 2 + (YCOR - retailer['YCOR']) ** 2)"
-    "    weighted_sum = dist_fraction * distance + price_fraction * retailer['PRICE']"
+    "    fractional_price=(retailer['PRICE']-unit_cost)/(100-unit_cost)"
+    "    fractional_distance=distance/23"
+    "    weighted_sum = dist_fraction * fractional_distance + price_fraction * fractional_price"
     "    choices[retailer['WHO']] = weighted_sum"
-    "choice = min(choices, key=choices.get) "
+
+    "min_list=[]"
+    "min_weighted_sum=min(choices.values())"
+    "for m , n in choices.items():"
+    "    if n == min_weighted_sum:"
+    "        min_list.append(m)"
+
+    "choice=choice(min_list)"
+;    "choice = min(choices, key=choices.get) "
   )
   report py:runresult "choice"
 end
@@ -414,7 +426,7 @@ to evaluate-pricing-strategy
 
     ifelse market-share >= py:runresult "max_market_share"
     [
-      set price-change random-float 2
+      set price-change random-float 0.5
       set price (price + price-change)
     ]
     [
@@ -529,7 +541,7 @@ initial-number-customers
 initial-number-customers
 0
 100
-100.0
+70.0
 1
 1
 NIL
@@ -544,7 +556,7 @@ initial-number-retailers
 initial-number-retailers
 1
 10
-2.0
+3.0
 1
 1
 NIL
@@ -620,7 +632,7 @@ distance-fraction
 distance-fraction
 0
 10
-1.6
+1.0
 0.2
 1
 NIL
@@ -635,7 +647,7 @@ price-fraction
 price-fraction
 0
 10
-3.2
+1.0
 0.2
 1
 NIL
@@ -703,7 +715,7 @@ SWITCH
 259
 randomise-evaluation-period?
 randomise-evaluation-period?
-1
+0
 1
 -1000
 
@@ -839,7 +851,7 @@ set-run-day
 set-run-day
 0
 5000
-400.0
+550.0
 50
 1
 NIL
@@ -853,7 +865,7 @@ CHOOSER
 Experiment
 Experiment
 "Customised" "2-retailer-even-space" "3-retailer-even-space" "4-retailer-even-space"
-1
+2
 
 PLOT
 57
