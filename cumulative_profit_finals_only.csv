@@ -1,0 +1,26 @@
+"BehaviorSpace results (NetLogo 6.3.0)"
+"retailers_model_new.nlogo"
+"entry-pricing-analysis_final_only"
+"03/14/2023 15:30:14:848 +0000"
+"min-pxcor","max-pxcor","min-pycor","max-pycor"
+"-17","17","-17","17"
+"[run number]","1","1","2","2","3","3","4","4"
+"initial-number-customers","100",,"100",,"100",,"100",
+"set-evaluation-period-range","20",,"20",,"20",,"20",
+"set-run-day","400",,"400",,"400",,"400",
+"retailer1-entry-price","23",,"23",,"23",,"23",
+"price-fraction","1",,"1",,"1",,"1",
+"initial-number-retailers","2",,"2",,"2",,"2",
+"distance-fraction","1",,"1",,"1",,"1",
+"randomise-buying-frequency?","true",,"true",,"true",,"true",
+"Experiment","2-retailer-even-space",,"2-retailer-even-space",,"2-retailer-even-space",,"2-retailer-even-space",
+"unit-cost","20",,"20",,"20",,"20",
+"randomise-evaluation-period?25"false",,"false",,"false",,"false",
+"show-shop-id?","true",,"true",,"true",,"true",
+"retailer0-entry-price","23",,"23",,"23",,"23",
+"set-buying-frequency","1",,"1",,"1",,"1",
+"show-chosen-shop?","true",,"true",,"true",,"true",
+"[steps]","399","399","399","399","399","399","399","399"
+
+"[initial & final values]","[ cumulative-profit ] of retailer 0","[ cumulative-profit ] of retailer 1","[ cumulative-profit ] of retailer 0","[ cumulative-profit ] of retailer 1","[ cumulative-profit ] of retailer 0","[ cumulative-profit ] of retailer 1","[ cumulative-profit ] of retailer 0","[ cumulative-profit ] of retailer 1"
+,"498374.92688494205","493840.3409809809","564684.7676129956","573752.2789633651","228386.3942845874","282808.8718840103","422548.85546139634","456830.66128843324"
