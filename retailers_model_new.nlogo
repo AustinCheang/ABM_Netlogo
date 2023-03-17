@@ -329,7 +329,8 @@ to-report calculate-weighted-preference [ _XCOR _YCOR _WHO ]
     "choices = {}"
     "for retailer in retailers:"
     "    distance = math.sqrt((XCOR - retailer['XCOR']) ** 2 + (YCOR - retailer['YCOR']) ** 2)"
-    "    fractional_price=(retailer['PRICE']-unit_cost)/(100-unit_cost)"
+    "    fractional_price = (retailer['PRICE']-unit_cost)/ (100- unit_cost)"
+    "    print(f'fractional_price: {fractional_price}')"
     "    fractional_distance=distance/34"
     "    weighted_sum = dist_fraction * fractional_distance + price_fraction * fractional_price"
     "    choices[retailer['WHO']] = weighted_sum"
@@ -561,7 +562,7 @@ initial-number-retailers
 initial-number-retailers
 1
 10
-3.0
+2.0
 1
 1
 NIL
@@ -574,8 +575,8 @@ SLIDER
 173
 unit-cost
 unit-cost
-0
-100
+20
+50
 30.0
 1
 1
@@ -821,7 +822,7 @@ set-buying-frequency
 set-buying-frequency
 1
 7
-1.0
+2.0
 1
 1
 NIL
@@ -870,13 +871,13 @@ CHOOSER
 Experiment
 Experiment
 "Customised" "2-retailer-even-space" "3-retailer-even-space" "4-retailer-even-space"
-2
+1
 
 PLOT
-57
-469
-283
-629
+56
+551
+282
+711
 Buying-Frequency Distribution
 Buying-Frequency
 #
