@@ -340,7 +340,7 @@ to-report calculate-weighted-preference [ _XCOR _YCOR _WHO ]
     "choices = {}"
     "for retailer in retailers:"
     "    distance = math.sqrt((XCOR - retailer['XCOR']) ** 2 + (YCOR - retailer['YCOR']) ** 2)"
-    "    fractional_price = (retailer['PRICE'] - unit_cost) / 100"
+    "    fractional_price = (retailer['PRICE'] - unit_cost) / (100 - unit_cost)"
 ;    "    print(f'fractional_price: {fractional_price}')"
     "    fractional_distance=distance/34"
     "    weighted_sum = dist_fraction * fractional_distance + price_fraction * fractional_price"
@@ -789,7 +789,7 @@ set-buying-frequency
 set-buying-frequency
 1
 7
-5.0
+13.0
 1
 1
 NIL
@@ -872,7 +872,7 @@ SWITCH
 358
 305
 533
-339
+338
 randomise-budget?
 randomise-budget?
 0
@@ -883,7 +883,7 @@ SLIDER
 597
 295
 830
-329
+328
 retailer-0-mark-up-percentage
 retailer-0-mark-up-percentage
 0
@@ -898,7 +898,7 @@ SLIDER
 595
 337
 828
-371
+370
 retailer-1-mark-up-percentage
 retailer-1-mark-up-percentage
 0
@@ -913,7 +913,7 @@ SLIDER
 343
 138
 567
-172
+171
 initial-number-retailers
 initial-number-retailers
 1
