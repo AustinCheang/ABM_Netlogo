@@ -508,9 +508,9 @@ NIL
 1
 
 SLIDER
-340
+341
 92
-565
+566
 125
 initial-number-customers
 initial-number-customers
@@ -523,25 +523,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-336
-94
-562
-127
-initial-number-retailers
-initial-number-retailers
-1
-10
-2.0
-1
-1
-NIL
-HORIZONTAL
-
-SLIDER
-337
-140
-564
-173
+341
+184
+568
+217
 unit-cost
 unit-cost
 20
@@ -821,7 +806,7 @@ TEXTBOX
 19
 1218
 52
-4.2 Experiment - Market Entry Price
+Base Model
 11
 0.0
 1
@@ -838,10 +823,10 @@ randomise-budget?
 -1000
 
 SLIDER
-343
-138
-567
-171
+341
+140
+565
+173
 initial-number-retailers
 initial-number-retailers
 1
