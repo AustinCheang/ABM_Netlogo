@@ -807,7 +807,7 @@ TEXTBOX
 19
 1218
 52
-Base Model
+4.2 Experiment - Pricing Strategy Aggressiveness
 11
 0.0
 1
