@@ -1,3 +1,4 @@
+;run market share allocation
 extensions [
   py
 ]
@@ -127,12 +128,12 @@ to setup-customers
       set buying-frequency set-buying-frequency
     ]
     ifelse randomise-budget?[
-      let randn random 31 + 150
-      set budget (unit-cost * randn)
+      let randn random 31 + 140
+      set budget (unit-cost * randn / 100)
     ] [
-      set budget (unit-cost * 170)
+      set budget (unit-cost * 1.6)
     ]
-;    show budget
+    show (word "budget: " budget)
   ]
 
 end
@@ -270,15 +271,16 @@ end
 
 to go
   update-customers-preferences
-  update-market-shares
   buy ; check if customers need to buy
+  update-market-shares
   calculate-profit
   evaluate-pricing-strategy
-  tick
+
 
 ;  show (word "market-shares: " market-shares-list)
   update-customers-preference
-  if ticks >= set-run-day [ stop ]
+  tick
+  if ticks = set-run-day [ stop ]
 end
 
 ; ############################################################ Labels and Switches ############################################################
@@ -316,9 +318,8 @@ end
 ; ########################################################### Functions #########################################################################
 
 to update-customers-preferences
-    ask customers [
+  ask customers [
     set preferred-shop calculate-weighted-preference XCOR YCOR WHO
-
   ]
 end
 
@@ -385,7 +386,8 @@ to update-market-shares
     "from collections import defaultdict"
     "market_shares_count = defaultdict(int)"
     "for customer in customers:"
-    "    market_shares_count[customer['PREFERRED-SHOP']] += 1"
+    "    if 'PREFERRED-SHOP' in customer:"
+    "        market_shares_count[customer['PREFERRED-SHOP']] += 1"
    )
   let markets-shares-count py:runresult "market_shares_count"
   set market-shares-list markets-shares-count
@@ -415,10 +417,31 @@ to evaluate-pricing-strategy
     if ticks mod evaluation-period = 0 [
       ; get maximum market share
       py:set "market_shares_list" market-shares-list
+      py:set "total_customers" initial-number-customers
       (py:run
-        "max_market_share = max(x[1] for x in market_shares_list)"
+        "max_market_share = total_customers"
+        "if len(market_shares_list) > 0:"
+        "    max_market_share = max(x[1] for x in market_shares_list)"
         "print('max_market_share: ', max_market_share)"
-      )]
+      )
+
+      ifelse market-share = py:runresult "max_market_share"
+      [
+        set price-change random-float 0.1
+        set price (price + price-change)
+      ]
+      [
+        set old-price price
+        set price-change random-float 0.5
+        set price unit-cost
+        while [price + price-change < old-price]
+        [
+          ;        show (word "price-change: " price-change)
+          set price (price + price-change)
+          set price-change random-float 0.5
+        ]
+      ]
+    ]
     show (market-shares-list)
     show price
 
@@ -441,22 +464,7 @@ to evaluate-pricing-strategy
 ;
 
 
-    ifelse market-share >= py:runresult "max_market_share"
-    [
-      set price-change random-float 0.5
-      set price (price + price-change)
-    ]
-    [
-      set old-price price
-      set price-change random-float 0.5
-      set price unit-cost
-      while [price + price-change <= old-price]
-      [
-        set price-change random-float 0.5
-;        show (word "price-change: " price-change)
-        set price (price + price-change)
-      ]
-    ]
+
 
 ;      ; Lower the price to get more customers
 ;      if market-share < py:runresult "max_market_share"
@@ -464,7 +472,7 @@ to evaluate-pricing-strategy
 ;        set price-change random-float 1 + 1
 ;
 ;        while [price - price-change < unit-cost] [ ; Update the price-change until retailer earns money
-;          set price-change random-float 0.5
+;          set price-change random-float 1
 ;        ]
 ;        set price ( price - price-change)] ; Update new price
 ;      ; Although lower the cost close to unit-cost, retailer still want to make small bit of money once they see a little growth of market share
@@ -486,20 +494,26 @@ to buy
     if ticks mod (buying-frequency + 1) = 0 [
       ask retailers [
         if WHO = preferr_shop [
-          set quantity-sold ( quantity-sold + 1 )
-          set cumulative-profit (cumulative-profit + price - unit-cost)
+          ifelse customer-budget >= price
+          [
+            set quantity-sold ( quantity-sold + 1)
+            set cumulative-profit (cumulative-profit + price - unit-cost)
+          ]
+          [
+            set preferr_shop nobody
+          ]
+
         ]
-        set customer-budget (customer-budget - price)
       ]
+      set preferred-shop preferr_shop
     ]
-    set budget customer-budget
-;    show budget
   ]
 end
 
 to calculate-profit
   ask retailers [
     set profit ( quantity-sold * (price - unit-cost))
+;    set profit ( (market-share - previous-market-share) / previous-market-share )
   ]
 end
 @#$#@#$#@
@@ -571,7 +585,7 @@ unit-cost
 unit-cost
 20
 50
-50.0
+30.0
 1
 1
 NIL
@@ -632,7 +646,7 @@ distance-fraction
 distance-fraction
 0
 10
-1.0
+1.4
 0.2
 1
 NIL
@@ -647,7 +661,7 @@ price-fraction
 price-fraction
 0
 10
-1.8
+1.4
 0.2
 1
 NIL
@@ -702,7 +716,7 @@ set-evaluation-period-range
 set-evaluation-period-range
 5
 30
-19.0
+15.0
 1
 1
 NIL
@@ -731,12 +745,12 @@ PLOT
 495
 1669
 680
-Profit
+Market share growth rate
 Day
 Profit $
-0.0
+-1.0
 10.0
-0.0
+-1.0
 10.0
 true
 true
@@ -789,7 +803,7 @@ set-buying-frequency
 set-buying-frequency
 1
 7
-13.0
+14.0
 1
 1
 NIL
@@ -824,7 +838,7 @@ set-run-day
 set-run-day
 0
 5000
-550.0
+900.0
 50
 1
 NIL
@@ -875,7 +889,7 @@ SWITCH
 338
 randomise-budget?
 randomise-budget?
-0
+1
 1
 -1000
 
@@ -903,7 +917,7 @@ retailer-1-mark-up-percentage
 retailer-1-mark-up-percentage
 0
 1
-0.1
+0.5
 0.05
 1
 NIL
