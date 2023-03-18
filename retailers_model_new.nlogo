@@ -139,22 +139,29 @@ to setup-customers
 end
 
 to setup-retailers
-  if experiment = "2-retailer-even-space" [
-    set initial-number-retailers 2
-  ]
-  if experiment = "3-retailer-even-space" [
-    set initial-number-retailers 3
-  ]
-  if experiment = "4-retailer-even-space" [
-    set initial-number-retailers 4
-  ]
+;  if experiment = "2-retailer-even-space" [
+;    set initial-number-retailers 2
+;  ]
+;  if experiment = "3-retailer-even-space" [
+;    set initial-number-retailers 3
+;  ]
+;  if experiment = "4-retailer-even-space" [
+;    set initial-number-retailers 4
+;  ]
 
   create-retailers 2 ; Initialise the retailers agents
   [
     set shape "house"
     set color random 140 + 56 ; *** TODO: change the color codes
     set size 2.5  ; easier to see
-    set price ( random-float ( 0.5 * unit-cost ) +  unit-cost )
+;    set price ( random-float ( 0.5 * unit-cost ) +  unit-cost )
+    ; Add markup price
+    ifelse WHO = 0 [
+      set price (unit-cost * (1 + retailer-0-mark-up-percentage))
+    ] [
+     set price( unit-cost * (1 + retailer-1-mark-up-percentage))
+    ]
+
 
     ifelse randomise-evaluation-period? [
       set evaluation-period random (set-evaluation-period-range - 5 ) + 5
@@ -642,8 +649,8 @@ show-chosen-shop?
 PLOT
 894
 90
-1669
-276
+1707
+278
 plot market share
 Day
 MarketShare %
@@ -704,8 +711,8 @@ OUTPUT
 PLOT
 892
 502
-1667
-688
+1624
+690
 Cumulative Profit
 Day
 Profit $
@@ -747,7 +754,7 @@ set-buying-frequency
 set-buying-frequency
 1
 7
-1.0
+7.0
 1
 1
 NIL
@@ -855,8 +862,8 @@ HORIZONTAL
 PLOT
 892
 712
-1668
-904
+1624
+905
 cumulative profit growth rate
 NIL
 NIL
@@ -868,6 +875,36 @@ true
 true
 "" "ask retailers [\n  create-temporary-plot-pen (word who)\n  set-plot-pen-color color\n  plotxy ticks ((cumulative-profit - previous-cumulative-profit) / previous-cumulative-profit)\n]"
 PENS
+
+SLIDER
+583
+293
+834
+328
+retailer-1-mark-up-percentage
+retailer-1-mark-up-percentage
+0.01
+1
+0.25
+0
+1
+NIL
+HORIZONTAL
+
+SLIDER
+582
+336
+835
+371
+retailer-0-mark-up-percentage
+retailer-0-mark-up-percentage
+0
+1
+0.25
+0.01
+1
+NIL
+HORIZONTAL
 
 @#$#@#$#@
 ## WHAT IS IT?
