@@ -877,25 +877,25 @@ true
 PENS
 
 SLIDER
-583
-293
-834
-328
+1722
+122
+1973
+155
 retailer-1-mark-up-percentage
 retailer-1-mark-up-percentage
 0.01
 1
-0.25
+0.01
 0
 1
 NIL
 HORIZONTAL
 
 SLIDER
-582
-336
-835
-371
+1720
+165
+1973
+198
 retailer-0-mark-up-percentage
 retailer-0-mark-up-percentage
 0
