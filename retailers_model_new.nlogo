@@ -21,25 +21,22 @@ breed [customers customer]
 breed [retailers retailer]
 
 customers-own [
-;  consumption-rate
   preferred-shop
   buying-frequency
   budget
 ]
 retailers-own [
   price
-  growth-rate
   market-share
   evaluation-period
   price-change
   previous-market-share
-  previous-quantity-sold
   cumulative-profit
   previous-cumulative-profit
   quantity-sold
   old-price
 ]
-patches-own [s
+patches-own [
   my-row          ; the row of the intersection counting from the upper left corner of the
                   ; world.  -1 for non-intersection patches.
   my-column       ; the column of the intersection counting from the upper left corner of the
@@ -71,8 +68,8 @@ to setup
   update-market-shares
 
 
-  py:set "retailers" retailers
-  py:set "customers" customers
+;  py:set "retailers" retailers
+;  py:set "customers" customers
 
   display-labels
   display-chosen-shop-labels
@@ -145,22 +142,14 @@ to setup-retailers
   if experiment = "3-retailer-even-space" [
     set initial-number-retailers 3
   ]
-  if experiment = "4-retailer-even-space" [
-    set initial-number-retailers 4
-  ]
 
-  create-retailers 2 ; Initialise the retailers agents
+  create-retailers initial-number-retailers ; Initialise the retailers agents
   [
     set shape "house"
     set color random 140 + 56 ; *** TODO: change the color codes
     set size 2.5  ; easier to see
 
 ;    set price ( random-float ( 0.5 * unit-cost ) +  unit-cost )
-    ifelse WHO = 0 [
-      set price retailer-0-initial-price
-    ] [
-      set price retailer-1-initial-price
-    ]
 
 ;    ifelse randomise-evaluation-period? [
 ;      set evaluation-period random (set-evaluation-period-range - 5 ) + 5
@@ -170,9 +159,11 @@ to setup-retailers
     ifelse WHO = 0 [
       set evaluation-period retailer-0-evaluation-period
       set price-change retailer-0-price-change
+      set price retailer-0-initial-price
     ] [
       set evaluation-period retailer-1-evaluation-period
       set price-change retailer-1-price-change
+      set price retailer-1-initial-price
     ]
 
     ifelse randomise-buying-frequency? [
@@ -188,7 +179,7 @@ to setup-retailers
     output-print ( " " )
 
     set quantity-sold 0
-    set previous-cumulative-profit 0
+    set previous-cumulative-profit 1
   ]
 end
 
@@ -223,18 +214,7 @@ to assign-retailers-locations
     set ycor item 1 retail-cor
       ]
 
-  ]
-  if experiment = "4-retailer-even-space" [
-    (py:run
-      "available_locations = [8, 12, 36, 40]"
-     )
-    ask retailers [
-    let retail-cor item 1 py:runresult("grid_list_all[available_locations.pop()]")
-;    show (retail-cor)
-    set xcor item 0 retail-cor
-    set ycor item 1 retail-cor
-      ]
-  ]
+   ]
 end
 
 to-report assign-locations
@@ -348,8 +328,8 @@ to-report calculate-weighted-preference [ _XCOR _YCOR _WHO ]
     "choices = {}"
     "for retailer in retailers:"
     "    distance = math.sqrt((XCOR - retailer['XCOR']) ** 2 + (YCOR - retailer['YCOR']) ** 2)"
-    "    fractional_price = (retailer['PRICE']-unit_cost)/ (100- unit_cost)"
-;    "    print(f'fractional_price: {fractional_price}')"
+;    "    fractional_price = (retailer['PRICE']-unit_cost)/ (100- unit_cost)"
+    "    fractional_price = retailer['PRICE'] / budget"
     "    fractional_distance=distance/34"
     "    weighted_sum = dist_fraction * fractional_distance + price_fraction * fractional_price"
     "    choices[retailer['WHO']] = weighted_sum"
@@ -405,6 +385,7 @@ to update-market-shares
   ]
 end
 
+; Update retailer's market shares by retailer ID
 to-report get-update-market-share [ retailer_id market-shares-count ]
   py:set "market_shares_count" market-shares-count
   py:set "retailer_id" retailer_id
@@ -418,6 +399,7 @@ to-report get-update-market-share [ retailer_id market-shares-count ]
    report py:runresult "count"
 end
 
+; Update retailer's pricing strategy by different critieria
 to evaluate-pricing-strategy
   ask retailers [
     if ticks mod (evaluation-period + 1) = 0 [
@@ -472,7 +454,6 @@ to buy
           [
             set preferr_shop nobody
           ]
-
         ]
       ]
       set preferred-shop preferr_shop
@@ -481,10 +462,10 @@ to buy
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-344
-402
-830
-889
+343
+479
+829
+966
 -1
 -1
 13.66
@@ -548,7 +529,7 @@ unit-cost
 unit-cost
 20
 50
-30.0
+29.0
 1
 1
 NIL
@@ -566,10 +547,10 @@ show-shop-id?
 -1000
 
 PLOT
-895
-266
-1670
-451
+896
+335
+1672
+551
 Price
 Day
 Price $
@@ -624,7 +605,7 @@ price-fraction
 price-fraction
 0
 10
-1.0
+3.6
 0.2
 1
 NIL
@@ -642,11 +623,11 @@ show-chosen-shop?
 -1000
 
 PLOT
-895
-61
+894
+90
 1670
-247
-plot market share
+306
+Market Share of Retailers
 Day
 MarketShare %
 0.0
@@ -660,10 +641,10 @@ PENS
 "Balanced Market" 1.0 0 -2674135 true "" "plotxy ticks (1 / count retailers)"
 
 SWITCH
-349
-915
-578
-948
+596
+286
+825
+319
 randomise-buying-frequency?
 randomise-buying-frequency?
 0
@@ -671,10 +652,10 @@ randomise-buying-frequency?
 -1000
 
 SLIDER
-89
-959
-316
-992
+336
+330
+563
+363
 set-evaluation-period-range
 set-evaluation-period-range
 5
@@ -686,10 +667,10 @@ NIL
 HORIZONTAL
 
 SWITCH
-89
-915
-315
-948
+336
+286
+562
+319
 randomise-evaluation-period?
 randomise-evaluation-period?
 0
@@ -704,10 +685,10 @@ OUTPUT
 13
 
 PLOT
-893
-473
-1668
-659
+895
+579
+1671
+795
 Cumulative Profit
 Day
 Profit $
@@ -721,57 +702,57 @@ true
 PENS
 
 TEXTBOX
-513
-207
-680
-227
+506
+258
+753
+278
 Advanced Parameters
-15
+13
 0.0
 1
 
 TEXTBOX
-150
-35
-317
-55
+151
+66
+240
+85
 Set Up
-15
+13
 0.0
 1
 
 SLIDER
-348
-958
-578
-991
+595
+329
+828
+362
 set-buying-frequency
 set-buying-frequency
 1
 7
-10.0
+6.0
 1
 1
 NIL
 HORIZONTAL
 
 TEXTBOX
-1245
-31
-1412
-51
+1242
+62
+1410
+90
 Results
-15
+13
 0.0
 1
 
 TEXTBOX
-562
-378
-729
-398
+558
+451
+726
+479
 Game
-15
+13
 0.0
 1
 
@@ -791,20 +772,20 @@ NIL
 HORIZONTAL
 
 CHOOSER
-61
-505
-290
-550
+595
+376
+828
+421
 Experiment
 Experiment
 "Customised" "2-retailer-even-space" "3-retailer-even-space" "4-retailer-even-space"
-1
+3
 
 PLOT
-61
-573
-287
-733
+59
+542
+285
+702
 Buying-Frequency Distribution
 Buying-Frequency
 #
@@ -829,10 +810,10 @@ TEXTBOX
 1
 
 SWITCH
-345
-228
-520
-261
+336
+376
+564
+409
 randomise-budget?
 randomise-budget?
 0
@@ -848,64 +829,42 @@ initial-number-retailers
 initial-number-retailers
 1
 10
-2.0
+3.0
 1
 1
 NIL
 HORIZONTAL
 
-PLOT
-893
-683
-1669
-875
-cumulative profit growth rate
-NIL
-NIL
+TEXTBOX
+550
+43
+693
+62
+Parameters\n
+13
 0.0
-10.0
-0.0
-0.5
-true
-true
-"" "ask retailers [\n  create-temporary-plot-pen (word who)\n  set-plot-pen-color color\n  plotxy ticks ((cumulative-profit - previous-cumulative-profit) / previous-cumulative-profit)\n]"
-PENS
+1
 
 SLIDER
-345
-265
-543
-298
+1686
+219
+1884
+252
 retailer-0-price-change
 retailer-0-price-change
 0
 5
-0.2
+0.0
 0.1
 1
 NIL
 HORIZONTAL
 
 SLIDER
-617
-265
-815
-298
-retailer-1-price-change
-retailer-1-price-change
-0
-5
-1.0
-0.1
-1
-NIL
-HORIZONTAL
-
-SLIDER
-345
-302
-576
-335
+1686
+180
+1917
+213
 retailer-0-evaluation-period
 retailer-0-evaluation-period
 0
@@ -917,10 +876,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-617
-304
-848
-337
+1686
+399
+1917
+432
 retailer-1-evaluation-period
 retailer-1-evaluation-period
 0
@@ -932,10 +891,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-345
-338
-535
-371
+1686
+258
+1876
+291
 retailer-0-initial-price
 retailer-0-initial-price
 0
@@ -947,16 +906,31 @@ NIL
 HORIZONTAL
 
 SLIDER
-617
-342
-807
-375
+1688
+476
+1878
+509
 retailer-1-initial-price
 retailer-1-initial-price
 0
 100
 42.0
 1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+1686
+438
+1884
+471
+retailer-1-price-change
+retailer-1-price-change
+0
+5
+1.0
+0.1
 1
 NIL
 HORIZONTAL
