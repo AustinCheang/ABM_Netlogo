@@ -156,12 +156,6 @@ to setup-retailers
       set evaluation-period set-evaluation-period-range
     ]
 
-    ifelse randomise-buying-frequency? [
-      set set-buying-frequency random (set-evaluation-period-range - 1 ) + 1
-    ] [
-      set buying-frequency set-buying-frequency
-    ]
-
     output-print ( word "Retailer: " WHO )
     output-print ( word "Inital Price: " price)
     output-print ( word "Evaluation Period: " evaluation-period)
@@ -295,18 +289,18 @@ end
 
 to update-customers-preferences
   ask customers [
-    set preferred-shop calculate-weighted-preference XCOR YCOR WHO
+    set preferred-shop calculate-weighted-preference XCOR YCOR WHO budget
   ]
 end
 
-to-report calculate-weighted-preference [ _XCOR _YCOR _WHO ]
+to-report calculate-weighted-preference [ _XCOR _YCOR _WHO _budget ]
   py:set "_WHO" _WHO
   py:set "retailers" retailers
   py:set "XCOR" _XCOR
   py:set "YCOR" _YCOR
   py:set "dist_fraction" distance-fraction
   py:set "price_fraction" price-fraction
-  py:set "unit_cost" unit-cost
+  py:set "budget" _budget
 
   ; Get the highest price of the retailers
   (py:run
@@ -317,7 +311,6 @@ to-report calculate-weighted-preference [ _XCOR _YCOR _WHO ]
     "choices = {}"
     "for retailer in retailers:"
     "    distance = math.sqrt((XCOR - retailer['XCOR']) ** 2 + (YCOR - retailer['YCOR']) ** 2)"
-;    "    fractional_price = (retailer['PRICE']-unit_cost)/ (100- unit_cost)"
     "    fractional_price = retailer['PRICE'] / budget"
     "    fractional_distance=distance/34"
     "    weighted_sum = dist_fraction * fractional_distance + price_fraction * fractional_price"
