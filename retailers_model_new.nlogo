@@ -142,9 +142,6 @@ to setup-retailers
   if experiment = "3-retailer-even-space" [
     set initial-number-retailers 3
   ]
-  if experiment = "4-retailer-even-space" [
-    set initial-number-retailers 4
-  ]
 
   create-retailers initial-number-retailers ; Initialise the retailers agents
   [
@@ -207,17 +204,6 @@ to assign-retailers-locations
       ]
 
    ]
-  if experiment = "4-retailer-even-space" [
-    (py:run
-      "available_locations = [8, 12, 36, 40]"
-     )
-    ask retailers [
-    let retail-cor item 1 py:runresult("grid_list_all[available_locations.pop()]")
-    show (retail-cor)
-    set xcor item 0 retail-cor
-    set ycor item 1 retail-cor
-      ]
-  ]
 end
 
 to-report assign-locations
@@ -513,7 +499,7 @@ initial-number-customers
 initial-number-customers
 0
 100
-70.0
+50.0
 1
 1
 NIL
@@ -626,7 +612,7 @@ PLOT
 90
 1670
 306
-plot market share
+Market Share of Retailers
 Day
 MarketShare %
 0.0
@@ -701,22 +687,22 @@ true
 PENS
 
 TEXTBOX
-473
-252
-724
-355
+506
+258
+757
+361
 Advanced Parameters
-4
+13
 0.0
 1
 
 TEXTBOX
-143
-58
-311
-86
+151
+66
+319
+94
 Set Up
-4
+13
 0.0
 1
 
@@ -724,7 +710,7 @@ SLIDER
 595
 329
 828
-364
+362
 set-buying-frequency
 set-buying-frequency
 1
@@ -736,22 +722,22 @@ NIL
 HORIZONTAL
 
 TEXTBOX
-1244
-60
-1412
-88
+1242
+62
+1410
+90
 Results
-4
+13
 0.0
 1
 
 TEXTBOX
-546
-445
-714
-473
+558
+451
+726
+479
 Game
-4
+13
 0.0
 1
 
@@ -774,17 +760,17 @@ CHOOSER
 595
 376
 828
-422
+421
 Experiment
 Experiment
 "Customised" "2-retailer-even-space" "3-retailer-even-space" "4-retailer-even-space"
-2
+0
 
 PLOT
 59
-602
+542
 285
-762
+702
 Buying-Frequency Distribution
 Buying-Frequency
 #
@@ -804,7 +790,7 @@ TEXTBOX
 1350
 61
 Base Model
-15
+16
 0.0
 1
 
@@ -812,7 +798,7 @@ SWITCH
 338
 376
 564
-411
+409
 randomise-budget?
 randomise-budget?
 0
@@ -835,12 +821,12 @@ NIL
 HORIZONTAL
 
 TEXTBOX
-532
-56
-708
-104
+548
+67
+724
+115
 Parameters\n
-4
+13
 0.0
 1
 
