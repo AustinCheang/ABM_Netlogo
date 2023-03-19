@@ -317,7 +317,8 @@ to-report calculate-weighted-preference [ _XCOR _YCOR _WHO ]
     "choices = {}"
     "for retailer in retailers:"
     "    distance = math.sqrt((XCOR - retailer['XCOR']) ** 2 + (YCOR - retailer['YCOR']) ** 2)"
-    "    fractional_price = (retailer['PRICE']-unit_cost)/ (100- unit_cost)"
+;    "    fractional_price = (retailer['PRICE']-unit_cost)/ (100- unit_cost)"
+    "    fractional_price = retailer['PRICE'] / budget"
     "    fractional_distance=distance/34"
     "    weighted_sum = dist_fraction * fractional_distance + price_fraction * fractional_price"
     "    choices[retailer['WHO']] = weighted_sum"
@@ -715,7 +716,7 @@ set-buying-frequency
 set-buying-frequency
 1
 7
-6.0
+5.0
 1
 1
 NIL
@@ -795,7 +796,7 @@ Base Model
 1
 
 SWITCH
-338
+336
 376
 564
 409
