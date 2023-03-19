@@ -156,7 +156,11 @@ to setup-retailers
     set size 2.5  ; easier to see
 
 ;    set price ( random-float ( 0.5 * unit-cost ) +  unit-cost )
-    set price initial-price-of-retailers
+    ifelse WHO = 0 [
+      set price retailer-0-initial-price
+    ] [
+      set price retailer-1-initial-price
+    ]
 
 ;    ifelse randomise-evaluation-period? [
 ;      set evaluation-period random (set-evaluation-period-range - 5 ) + 5
@@ -477,10 +481,10 @@ to buy
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-342
-392
-828
-879
+344
+402
+830
+889
 -1
 -1
 13.66
@@ -717,10 +721,10 @@ true
 PENS
 
 TEXTBOX
-511
-231
-678
-251
+513
+207
+680
+227
 Advanced Parameters
 15
 0.0
@@ -745,7 +749,7 @@ set-buying-frequency
 set-buying-frequency
 1
 7
-3.0
+7.0
 1
 1
 NIL
@@ -762,10 +766,10 @@ Results
 1
 
 TEXTBOX
-559
-368
-726
-388
+562
+378
+729
+398
 Game
 15
 0.0
@@ -825,10 +829,10 @@ TEXTBOX
 1
 
 SWITCH
-343
-252
-518
-285
+345
+228
+520
+261
 randomise-budget?
 randomise-budget?
 0
@@ -868,10 +872,10 @@ true
 PENS
 
 SLIDER
-343
-289
-541
-324
+345
+265
+543
+298
 retailer-0-price-change
 retailer-0-price-change
 0
@@ -883,25 +887,25 @@ NIL
 HORIZONTAL
 
 SLIDER
-615
-289
-813
-324
+617
+265
+815
+298
 retailer-1-price-change
 retailer-1-price-change
 0
 5
-1.0
+0.2
 0.1
 1
 NIL
 HORIZONTAL
 
 SLIDER
-343
-326
-574
-361
+345
+302
+576
+335
 retailer-0-evaluation-period
 retailer-0-evaluation-period
 0
@@ -913,10 +917,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-615
-328
-846
-363
+617
+304
+848
+337
 retailer-1-evaluation-period
 retailer-1-evaluation-period
 0
@@ -928,15 +932,30 @@ NIL
 HORIZONTAL
 
 SLIDER
-615
-252
-818
-287
-initial-price-of-retailers
-initial-price-of-retailers
+345
+338
+535
+372
+retailer-0-initial-price
+retailer-0-initial-price
 0
 100
-40.0
+36.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+617
+342
+807
+376
+retailer-1-initial-price
+retailer-1-initial-price
+0
+100
+42.0
 1
 1
 NIL
