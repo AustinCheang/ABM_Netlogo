@@ -749,7 +749,7 @@ set-buying-frequency
 set-buying-frequency
 1
 7
-7.0
+10.0
 1
 1
 NIL
@@ -895,7 +895,7 @@ retailer-1-price-change
 retailer-1-price-change
 0
 5
-0.2
+1.0
 0.1
 1
 NIL
@@ -935,7 +935,7 @@ SLIDER
 345
 338
 535
-372
+371
 retailer-0-initial-price
 retailer-0-initial-price
 0
@@ -950,7 +950,7 @@ SLIDER
 617
 342
 807
-376
+375
 retailer-1-initial-price
 retailer-1-initial-price
 0
@@ -1370,23 +1370,23 @@ NetLogo 6.3.0
     <metric>[ cumulative-profit ] of retailer 1</metric>
     <metric>[ market-share ] of retailer 1</metric>
     <metric>[ price ] of retailer 1</metric>
-    <enumeratedValueSet variable="initial-price-of-retailers">
-      <value value="40"/>
-    </enumeratedValueSet>
     <enumeratedValueSet variable="retailer-1-price-change">
       <value value="0.2"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="initial-number-customers">
       <value value="80"/>
     </enumeratedValueSet>
-    <enumeratedValueSet variable="set-evaluation-period-range">
-      <value value="15"/>
-    </enumeratedValueSet>
     <enumeratedValueSet variable="set-run-day">
       <value value="2000"/>
     </enumeratedValueSet>
+    <enumeratedValueSet variable="set-evaluation-period-range">
+      <value value="15"/>
+    </enumeratedValueSet>
     <enumeratedValueSet variable="retailer-1-evaluation-period">
       <value value="60"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="retailer-1-initial-price">
+      <value value="42"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="randomise-budget?">
       <value value="true"/>
@@ -1412,17 +1412,20 @@ NetLogo 6.3.0
     <enumeratedValueSet variable="retailer-0-evaluation-period">
       <value value="60"/>
     </enumeratedValueSet>
-    <enumeratedValueSet variable="randomise-evaluation-period?">
-      <value value="true"/>
-    </enumeratedValueSet>
     <enumeratedValueSet variable="unit-cost">
       <value value="30"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="randomise-evaluation-period?">
+      <value value="true"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="show-shop-id?">
       <value value="true"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="set-buying-frequency">
-      <value value="4"/>
+      <value value="7"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="retailer-0-initial-price">
+      <value value="36"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="show-chosen-shop?">
       <value value="true"/>
@@ -1438,23 +1441,23 @@ NetLogo 6.3.0
     <metric>[ cumulative-profit ] of retailer 1</metric>
     <metric>[ market-share ] of retailer 1</metric>
     <metric>[ price ] of retailer 1</metric>
-    <enumeratedValueSet variable="initial-price-of-retailers">
-      <value value="40"/>
-    </enumeratedValueSet>
     <enumeratedValueSet variable="retailer-1-price-change">
       <value value="0.2"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="initial-number-customers">
       <value value="80"/>
     </enumeratedValueSet>
-    <enumeratedValueSet variable="set-evaluation-period-range">
-      <value value="15"/>
-    </enumeratedValueSet>
     <enumeratedValueSet variable="set-run-day">
       <value value="2000"/>
     </enumeratedValueSet>
+    <enumeratedValueSet variable="set-evaluation-period-range">
+      <value value="15"/>
+    </enumeratedValueSet>
     <enumeratedValueSet variable="retailer-1-evaluation-period">
       <value value="10"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="retailer-1-initial-price">
+      <value value="42"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="randomise-budget?">
       <value value="true"/>
@@ -1480,17 +1483,20 @@ NetLogo 6.3.0
     <enumeratedValueSet variable="retailer-0-evaluation-period">
       <value value="60"/>
     </enumeratedValueSet>
-    <enumeratedValueSet variable="randomise-evaluation-period?">
-      <value value="true"/>
-    </enumeratedValueSet>
     <enumeratedValueSet variable="unit-cost">
       <value value="30"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="randomise-evaluation-period?">
+      <value value="true"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="show-shop-id?">
       <value value="true"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="set-buying-frequency">
-      <value value="4"/>
+      <value value="7"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="retailer-0-initial-price">
+      <value value="36"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="show-chosen-shop?">
       <value value="true"/>
@@ -1506,23 +1512,23 @@ NetLogo 6.3.0
     <metric>[ cumulative-profit ] of retailer 1</metric>
     <metric>[ market-share ] of retailer 1</metric>
     <metric>[ price ] of retailer 1</metric>
-    <enumeratedValueSet variable="initial-price-of-retailers">
-      <value value="40"/>
-    </enumeratedValueSet>
     <enumeratedValueSet variable="retailer-1-price-change">
       <value value="1"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="initial-number-customers">
       <value value="80"/>
     </enumeratedValueSet>
-    <enumeratedValueSet variable="set-evaluation-period-range">
-      <value value="15"/>
-    </enumeratedValueSet>
     <enumeratedValueSet variable="set-run-day">
       <value value="2000"/>
     </enumeratedValueSet>
+    <enumeratedValueSet variable="set-evaluation-period-range">
+      <value value="15"/>
+    </enumeratedValueSet>
     <enumeratedValueSet variable="retailer-1-evaluation-period">
       <value value="60"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="retailer-1-initial-price">
+      <value value="42"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="randomise-budget?">
       <value value="true"/>
@@ -1548,17 +1554,20 @@ NetLogo 6.3.0
     <enumeratedValueSet variable="retailer-0-evaluation-period">
       <value value="60"/>
     </enumeratedValueSet>
-    <enumeratedValueSet variable="randomise-evaluation-period?">
-      <value value="true"/>
-    </enumeratedValueSet>
     <enumeratedValueSet variable="unit-cost">
       <value value="30"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="randomise-evaluation-period?">
+      <value value="true"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="show-shop-id?">
       <value value="true"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="set-buying-frequency">
-      <value value="4"/>
+      <value value="7"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="retailer-0-initial-price">
+      <value value="36"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="show-chosen-shop?">
       <value value="true"/>
