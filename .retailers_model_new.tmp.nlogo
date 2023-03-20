@@ -1,3 +1,4 @@
+;run market share allocation
 extensions [
   py
 ]
@@ -416,8 +417,7 @@ to buy
     let customer-budget budget
     if ticks mod (buying-frequency + 1) = 0 [
       ask retailers [
-        if WHO = preferr_shop [
-;          Buy if budget enough, else do not buy
+        if WHO = preferr_shop
           ifelse customer-budget >= price
           [
             set cumulative-profit (cumulative-profit + price - unit-cost)
