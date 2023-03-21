@@ -130,7 +130,6 @@ to setup-customers
     ] [
       set budget (unit-cost * 1.6)
     ]
-    show (word "budget: " budget)
   ]
 
 end
@@ -151,9 +150,9 @@ to setup-retailers
 ;    set price ( random-float ( 0.5 * unit-cost ) +  unit-cost )
     ; Add markup price
     ifelse WHO = 0 [
-      set price (unit-cost * (1 + retailer-0-mark-up-percentage))
+      set price (unit-cost * retailer-0-mark-up-percentage)
     ] [
-     set price( unit-cost * (1 + retailer-1-mark-up-percentage))
+     set price( unit-cost * retailer-1-mark-up-percentage)
     ]
 
 
@@ -399,7 +398,7 @@ to evaluate-pricing-strategy
         "max_market_share = total_customers"
         "if len(market_shares_list) > 0:"
         "    max_market_share = max(x[1] for x in market_shares_list)"
-        "print('max_market_share: ', max_market_share)"
+;        "print('max_market_share: ', max_market_share)"
       )
 
       ifelse (market-share = py:runresult "max_market_share") and (market-share >= previous-market-share) and (cumulative-profit > previous-cumulative-profit)
@@ -413,14 +412,13 @@ to evaluate-pricing-strategy
         set price unit-cost
         while [price + price-change < old-price]
         [
-          ;        show (word "price-change: " price-change)
           set price (price + price-change)
           set price-change random-float 0.5
         ]
       ]
     ]
-    show (market-shares-list)
-    show price
+;    show (market-shares-list)
+;    show price
   ]
 
 end
@@ -646,7 +644,7 @@ set-evaluation-period-range
 set-evaluation-period-range
 5
 30
-15.0
+20.0
 1
 1
 NIL
@@ -751,7 +749,7 @@ set-run-day
 set-run-day
 0
 5000
-2200.0
+2000.0
 50
 1
 NIL
@@ -832,30 +830,30 @@ Parameters\n
 1
 
 SLIDER
-1722
-122
-1973
-155
+1679
+209
+1930
+242
 retailer-1-mark-up-percentage
 retailer-1-mark-up-percentage
-0.01
 1
-0.1
+2
+1.45
 0.01
 1
 NIL
 HORIZONTAL
 
 SLIDER
-1720
-165
-1973
-198
+1679
+168
+1932
+201
 retailer-0-mark-up-percentage
 retailer-0-mark-up-percentage
-0
 1
-0.25
+2
+1.45
 0.01
 1
 NIL
@@ -1207,6 +1205,539 @@ NetLogo 6.3.0
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
+<experiments>
+  <experiment name="E1_E1" repetitions="4" runMetricsEveryStep="true">
+    <setup>setup</setup>
+    <go>go</go>
+    <timeLimit steps="2000"/>
+    <metric>[ cumulative-profit ] of retailer 0</metric>
+    <metric>[ market-share ] of retailer 0</metric>
+    <metric>[ price ] of retailer 0</metric>
+    <metric>[ cumulative-profit ] of retailer 1</metric>
+    <metric>[ market-share ] of retailer 1</metric>
+    <metric>[ price ] of retailer 1</metric>
+    <enumeratedValueSet variable="initial-number-customers">
+      <value value="80"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="set-evaluation-period-range">
+      <value value="20"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="set-run-day">
+      <value value="2000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="randomise-budget?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="price-fraction">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="initial-number-retailers">
+      <value value="2"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="distance-fraction">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="randomise-buying-frequency?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="retailer-0-mark-up-percentage">
+      <value value="1.15"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Experiment">
+      <value value="&quot;2-retailer-even-space&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="randomise-evaluation-period?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="unit-cost">
+      <value value="30"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="show-shop-id?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="set-buying-frequency">
+      <value value="7"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="retailer-1-mark-up-percentage">
+      <value value="1.15"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="show-chosen-shop?">
+      <value value="true"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="E1_E2" repetitions="4" runMetricsEveryStep="true">
+    <setup>setup</setup>
+    <go>go</go>
+    <timeLimit steps="2000"/>
+    <metric>[ cumulative-profit ] of retailer 0</metric>
+    <metric>[ market-share ] of retailer 0</metric>
+    <metric>[ price ] of retailer 0</metric>
+    <metric>[ cumulative-profit ] of retailer 1</metric>
+    <metric>[ market-share ] of retailer 1</metric>
+    <metric>[ price ] of retailer 1</metric>
+    <enumeratedValueSet variable="initial-number-customers">
+      <value value="80"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="set-evaluation-period-range">
+      <value value="20"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="set-run-day">
+      <value value="2000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="randomise-budget?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="price-fraction">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="initial-number-retailers">
+      <value value="2"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="distance-fraction">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="randomise-buying-frequency?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="retailer-0-mark-up-percentage">
+      <value value="1.15"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Experiment">
+      <value value="&quot;2-retailer-even-space&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="randomise-evaluation-period?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="unit-cost">
+      <value value="30"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="show-shop-id?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="set-buying-frequency">
+      <value value="7"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="retailer-1-mark-up-percentage">
+      <value value="1.3"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="show-chosen-shop?">
+      <value value="true"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="E1_E3" repetitions="4" runMetricsEveryStep="true">
+    <setup>setup</setup>
+    <go>go</go>
+    <timeLimit steps="2000"/>
+    <metric>[ cumulative-profit ] of retailer 0</metric>
+    <metric>[ market-share ] of retailer 0</metric>
+    <metric>[ price ] of retailer 0</metric>
+    <metric>[ cumulative-profit ] of retailer 1</metric>
+    <metric>[ market-share ] of retailer 1</metric>
+    <metric>[ price ] of retailer 1</metric>
+    <enumeratedValueSet variable="initial-number-customers">
+      <value value="80"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="set-evaluation-period-range">
+      <value value="20"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="set-run-day">
+      <value value="2000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="randomise-budget?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="price-fraction">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="initial-number-retailers">
+      <value value="2"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="distance-fraction">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="randomise-buying-frequency?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="retailer-0-mark-up-percentage">
+      <value value="1.15"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Experiment">
+      <value value="&quot;2-retailer-even-space&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="randomise-evaluation-period?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="unit-cost">
+      <value value="30"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="show-shop-id?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="set-buying-frequency">
+      <value value="7"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="retailer-1-mark-up-percentage">
+      <value value="1.45"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="show-chosen-shop?">
+      <value value="true"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="E2_E1" repetitions="4" runMetricsEveryStep="true">
+    <setup>setup</setup>
+    <go>go</go>
+    <timeLimit steps="2000"/>
+    <metric>[ cumulative-profit ] of retailer 0</metric>
+    <metric>[ market-share ] of retailer 0</metric>
+    <metric>[ price ] of retailer 0</metric>
+    <metric>[ cumulative-profit ] of retailer 1</metric>
+    <metric>[ market-share ] of retailer 1</metric>
+    <metric>[ price ] of retailer 1</metric>
+    <enumeratedValueSet variable="initial-number-customers">
+      <value value="80"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="set-evaluation-period-range">
+      <value value="20"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="set-run-day">
+      <value value="2000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="randomise-budget?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="price-fraction">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="initial-number-retailers">
+      <value value="2"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="distance-fraction">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="randomise-buying-frequency?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="retailer-0-mark-up-percentage">
+      <value value="1.3"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Experiment">
+      <value value="&quot;2-retailer-even-space&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="randomise-evaluation-period?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="unit-cost">
+      <value value="30"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="show-shop-id?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="set-buying-frequency">
+      <value value="7"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="retailer-1-mark-up-percentage">
+      <value value="1.15"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="show-chosen-shop?">
+      <value value="true"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="E2_E2" repetitions="4" runMetricsEveryStep="true">
+    <setup>setup</setup>
+    <go>go</go>
+    <timeLimit steps="2000"/>
+    <metric>[ cumulative-profit ] of retailer 0</metric>
+    <metric>[ market-share ] of retailer 0</metric>
+    <metric>[ price ] of retailer 0</metric>
+    <metric>[ cumulative-profit ] of retailer 1</metric>
+    <metric>[ market-share ] of retailer 1</metric>
+    <metric>[ price ] of retailer 1</metric>
+    <enumeratedValueSet variable="initial-number-customers">
+      <value value="80"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="set-evaluation-period-range">
+      <value value="20"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="set-run-day">
+      <value value="2000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="randomise-budget?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="price-fraction">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="initial-number-retailers">
+      <value value="2"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="distance-fraction">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="randomise-buying-frequency?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="retailer-0-mark-up-percentage">
+      <value value="1.3"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Experiment">
+      <value value="&quot;2-retailer-even-space&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="randomise-evaluation-period?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="unit-cost">
+      <value value="30"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="show-shop-id?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="set-buying-frequency">
+      <value value="7"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="retailer-1-mark-up-percentage">
+      <value value="1.3"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="show-chosen-shop?">
+      <value value="true"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="E2_E3" repetitions="4" runMetricsEveryStep="true">
+    <setup>setup</setup>
+    <go>go</go>
+    <timeLimit steps="2000"/>
+    <metric>[ cumulative-profit ] of retailer 0</metric>
+    <metric>[ market-share ] of retailer 0</metric>
+    <metric>[ price ] of retailer 0</metric>
+    <metric>[ cumulative-profit ] of retailer 1</metric>
+    <metric>[ market-share ] of retailer 1</metric>
+    <metric>[ price ] of retailer 1</metric>
+    <enumeratedValueSet variable="initial-number-customers">
+      <value value="80"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="set-evaluation-period-range">
+      <value value="20"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="set-run-day">
+      <value value="2000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="randomise-budget?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="price-fraction">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="initial-number-retailers">
+      <value value="2"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="distance-fraction">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="randomise-buying-frequency?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="retailer-0-mark-up-percentage">
+      <value value="1.3"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Experiment">
+      <value value="&quot;2-retailer-even-space&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="randomise-evaluation-period?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="unit-cost">
+      <value value="30"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="show-shop-id?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="set-buying-frequency">
+      <value value="7"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="retailer-1-mark-up-percentage">
+      <value value="1.45"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="show-chosen-shop?">
+      <value value="true"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="E3_E1" repetitions="4" runMetricsEveryStep="true">
+    <setup>setup</setup>
+    <go>go</go>
+    <timeLimit steps="2000"/>
+    <metric>[ cumulative-profit ] of retailer 0</metric>
+    <metric>[ market-share ] of retailer 0</metric>
+    <metric>[ price ] of retailer 0</metric>
+    <metric>[ cumulative-profit ] of retailer 1</metric>
+    <metric>[ market-share ] of retailer 1</metric>
+    <metric>[ price ] of retailer 1</metric>
+    <enumeratedValueSet variable="initial-number-customers">
+      <value value="80"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="set-evaluation-period-range">
+      <value value="20"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="set-run-day">
+      <value value="2000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="randomise-budget?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="price-fraction">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="initial-number-retailers">
+      <value value="2"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="distance-fraction">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="randomise-buying-frequency?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="retailer-0-mark-up-percentage">
+      <value value="1.45"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Experiment">
+      <value value="&quot;2-retailer-even-space&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="randomise-evaluation-period?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="unit-cost">
+      <value value="30"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="show-shop-id?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="set-buying-frequency">
+      <value value="7"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="retailer-1-mark-up-percentage">
+      <value value="1.15"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="show-chosen-shop?">
+      <value value="true"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="E3_E2" repetitions="4" runMetricsEveryStep="true">
+    <setup>setup</setup>
+    <go>go</go>
+    <timeLimit steps="2000"/>
+    <metric>[ cumulative-profit ] of retailer 0</metric>
+    <metric>[ market-share ] of retailer 0</metric>
+    <metric>[ price ] of retailer 0</metric>
+    <metric>[ cumulative-profit ] of retailer 1</metric>
+    <metric>[ market-share ] of retailer 1</metric>
+    <metric>[ price ] of retailer 1</metric>
+    <enumeratedValueSet variable="initial-number-customers">
+      <value value="80"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="set-evaluation-period-range">
+      <value value="20"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="set-run-day">
+      <value value="2000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="randomise-budget?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="price-fraction">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="initial-number-retailers">
+      <value value="2"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="distance-fraction">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="randomise-buying-frequency?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="retailer-0-mark-up-percentage">
+      <value value="1.45"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Experiment">
+      <value value="&quot;2-retailer-even-space&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="randomise-evaluation-period?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="unit-cost">
+      <value value="30"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="show-shop-id?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="set-buying-frequency">
+      <value value="7"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="retailer-1-mark-up-percentage">
+      <value value="1.3"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="show-chosen-shop?">
+      <value value="true"/>
+    </enumeratedValueSet>
+  </experiment>
+  <experiment name="E3_E3" repetitions="4" runMetricsEveryStep="true">
+    <setup>setup</setup>
+    <go>go</go>
+    <timeLimit steps="2000"/>
+    <metric>[ cumulative-profit ] of retailer 0</metric>
+    <metric>[ market-share ] of retailer 0</metric>
+    <metric>[ price ] of retailer 0</metric>
+    <metric>[ cumulative-profit ] of retailer 1</metric>
+    <metric>[ market-share ] of retailer 1</metric>
+    <metric>[ price ] of retailer 1</metric>
+    <enumeratedValueSet variable="initial-number-customers">
+      <value value="80"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="set-evaluation-period-range">
+      <value value="20"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="set-run-day">
+      <value value="2000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="randomise-budget?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="price-fraction">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="initial-number-retailers">
+      <value value="2"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="distance-fraction">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="randomise-buying-frequency?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="retailer-0-mark-up-percentage">
+      <value value="1.45"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Experiment">
+      <value value="&quot;2-retailer-even-space&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="randomise-evaluation-period?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="unit-cost">
+      <value value="30"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="show-shop-id?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="set-buying-frequency">
+      <value value="7"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="retailer-1-mark-up-percentage">
+      <value value="1.45"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="show-chosen-shop?">
+      <value value="true"/>
+    </enumeratedValueSet>
+  </experiment>
+</experiments>
 @#$#@#$#@
 @#$#@#$#@
 default
