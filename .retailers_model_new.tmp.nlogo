@@ -847,7 +847,7 @@ retailer-0-price-change
 retailer-0-price-change
 0
 5
-0.2
+1.0
 0.1
 1
 NIL
@@ -862,7 +862,7 @@ retailer-0-evaluation-period
 retailer-0-evaluation-period
 0
 100
-10.0
+60.0
 1
 1
 NIL
@@ -877,7 +877,7 @@ retailer-1-evaluation-period
 retailer-1-evaluation-period
 0
 100
-10.0
+60.0
 1
 1
 NIL
@@ -2127,7 +2127,7 @@ NetLogo 6.3.0
       <value value="true"/>
     </enumeratedValueSet>
   </experiment>
-  <experiment name="S3_S1" repetitions="4" runMetricsEveryStep="true">
+  <experiment name="S3_S1_D_10" repetitions="4" runMetricsEveryStep="true">
     <setup>setup</setup>
     <go>go</go>
     <timeLimit steps="2000"/>
@@ -2168,7 +2168,7 @@ NetLogo 6.3.0
       <value value="1"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="distance-fraction">
-      <value value="1"/>
+      <value value="10"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="randomise-buying-frequency?">
       <value value="true"/>
@@ -2198,7 +2198,7 @@ NetLogo 6.3.0
       <value value="true"/>
     </enumeratedValueSet>
   </experiment>
-  <experiment name="S3_S2" repetitions="4" runMetricsEveryStep="true">
+  <experiment name="S3_S2_D_10" repetitions="4" runMetricsEveryStep="true">
     <setup>setup</setup>
     <go>go</go>
     <timeLimit steps="2000"/>
@@ -2239,7 +2239,7 @@ NetLogo 6.3.0
       <value value="1"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="distance-fraction">
-      <value value="1"/>
+      <value value="10"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="randomise-buying-frequency?">
       <value value="true"/>
@@ -2269,7 +2269,7 @@ NetLogo 6.3.0
       <value value="true"/>
     </enumeratedValueSet>
   </experiment>
-  <experiment name="S3_S3" repetitions="4" runMetricsEveryStep="true">
+  <experiment name="S3_S3_D_10" repetitions="4" runMetricsEveryStep="true">
     <setup>setup</setup>
     <go>go</go>
     <timeLimit steps="2000"/>
@@ -2310,7 +2310,7 @@ NetLogo 6.3.0
       <value value="1"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="distance-fraction">
-      <value value="1"/>
+      <value value="10"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="randomise-buying-frequency?">
       <value value="true"/>
@@ -2340,7 +2340,7 @@ NetLogo 6.3.0
       <value value="true"/>
     </enumeratedValueSet>
   </experiment>
-  <experiment name="S3_S4" repetitions="4" runMetricsEveryStep="true">
+  <experiment name="S3_S4_D_10" repetitions="4" runMetricsEveryStep="true">
     <setup>setup</setup>
     <go>go</go>
     <timeLimit steps="2000"/>
@@ -2381,7 +2381,7 @@ NetLogo 6.3.0
       <value value="1"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="distance-fraction">
-      <value value="1"/>
+      <value value="10"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="randomise-buying-frequency?">
       <value value="true"/>
@@ -2411,7 +2411,7 @@ NetLogo 6.3.0
       <value value="true"/>
     </enumeratedValueSet>
   </experiment>
-  <experiment name="S3_S5" repetitions="4" runMetricsEveryStep="true">
+  <experiment name="S3_S5_D_10" repetitions="4" runMetricsEveryStep="true">
     <setup>setup</setup>
     <go>go</go>
     <timeLimit steps="2000"/>
@@ -2452,7 +2452,7 @@ NetLogo 6.3.0
       <value value="1"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="distance-fraction">
-      <value value="1"/>
+      <value value="10"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="randomise-buying-frequency?">
       <value value="true"/>
