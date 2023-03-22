@@ -862,7 +862,7 @@ retailer-0-evaluation-period
 retailer-0-evaluation-period
 0
 100
-10.0
+60.0
 1
 1
 NIL
@@ -877,7 +877,7 @@ retailer-1-evaluation-period
 retailer-1-evaluation-period
 0
 100
-10.0
+60.0
 1
 1
 NIL
