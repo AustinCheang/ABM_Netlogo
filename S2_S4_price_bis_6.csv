@@ -1,0 +1,35 @@
+"BehaviorSpace results (NetLogo 6.3.0)"
+"retailers_model_new.nlogo"
+"S2_S4_price_bis_6"
+"03/21/2023 21:34:23:328 +0000"
+"min-pxcor","max-pxcor","min-pycor","max-pycor"
+"-17","17","-17","17"
+"[run number]"
+"retailer-1-price-change",
+"initial-number-customers",
+"set-run-day",
+"set-evaluation-period-range",
+"retailer-1-evaluation-period",
+"retailer-1-initial-price",
+"randomise-budget?",
+"price-fraction",
+"initial-number-retailers",
+"retailer-0-price-change",
+"distance-fraction",
+"randomise-buying-frequency?",
+"Experiment",
+"retailer-0-evaluation-period",
+"randomise-evaluation-period?",
+"unit-cost",
+"show-shop-id?",
+"set-buying-frequency",
+"retailer-0-initial-price",
+"show-chosen-shop?",
+"[reporter]"
+"[final]",
+"[min]",
+"[max]",
+"[mean]",
+"[steps]",
+
+"[all run data]"
