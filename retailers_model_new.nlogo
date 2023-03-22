@@ -788,7 +788,7 @@ TEXTBOX
 15
 1350
 61
-Base Model
+4.2-experiment: Market entry price
 16
 0.0
 1
@@ -822,8 +822,8 @@ HORIZONTAL
 TEXTBOX
 548
 67
-724
-115
+636
+86
 Parameters\n
 13
 0.0
@@ -838,7 +838,7 @@ retailer-1-mark-up-percentage
 retailer-1-mark-up-percentage
 1
 2
-1.45
+1.15
 0.01
 1
 NIL
@@ -853,7 +853,7 @@ retailer-0-mark-up-percentage
 retailer-0-mark-up-percentage
 1
 2
-1.45
+1.3
 0.01
 1
 NIL
