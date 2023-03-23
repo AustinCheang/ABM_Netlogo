@@ -598,7 +598,7 @@ price-fraction
 price-fraction
 0
 10
-6.0
+10.0
 0.2
 1
 NIL
@@ -793,12 +793,12 @@ PENS
 "buying-freq" 1.0 1 -14070903 true "" "set-plot-y-range 0 7\nhistogram [buying-frequency] of customers"
 
 TEXTBOX
-655
-19
-1218
-52
+748
+17
+1311
+50
 4.1 Experiment - Pricing Strategy Aggressiveness
-11
+13
 0.0
 1
 
@@ -839,25 +839,25 @@ Parameters\n
 1
 
 SLIDER
-1686
-219
-1884
-252
+1691
+141
+1922
+174
 retailer-0-price-change
 retailer-0-price-change
 0
 5
-1.0
+0.2
 0.1
 1
 NIL
 HORIZONTAL
 
 SLIDER
-1686
-180
-1917
-213
+1690
+96
+1921
+129
 retailer-0-evaluation-period
 retailer-0-evaluation-period
 0
@@ -869,25 +869,25 @@ NIL
 HORIZONTAL
 
 SLIDER
-1686
-399
-1917
-432
+1945
+96
+2176
+129
 retailer-1-evaluation-period
 retailer-1-evaluation-period
 0
 100
-60.0
+10.0
 1
 1
 NIL
 HORIZONTAL
 
 SLIDER
-1686
-258
-1876
-291
+1691
+185
+1922
+218
 retailer-0-initial-price
 retailer-0-initial-price
 0
@@ -899,10 +899,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-1688
-476
-1878
-509
+1946
+186
+2177
+219
 retailer-1-initial-price
 retailer-1-initial-price
 0
@@ -914,19 +914,29 @@ NIL
 HORIZONTAL
 
 SLIDER
-1686
-438
-1884
-471
+1946
+141
+2177
+174
 retailer-1-price-change
 retailer-1-price-change
 0
 5
-1.0
+2.0
 0.1
 1
 NIL
 HORIZONTAL
+
+TEXTBOX
+1860
+60
+2010
+78
+Experiment Parameters
+13
+0.0
+1
 
 @#$#@#$#@
 ## WHAT IS IT?
@@ -1630,7 +1640,7 @@ NetLogo 6.3.0
       <value value="true"/>
     </enumeratedValueSet>
   </experiment>
-  <experiment name="S1_S6" repetitions="4" runMetricsEveryStep="true">
+  <experiment name="S1_S6_price_10" repetitions="4" runMetricsEveryStep="true">
     <setup>setup</setup>
     <go>go</go>
     <timeLimit steps="2000"/>
@@ -1662,7 +1672,7 @@ NetLogo 6.3.0
       <value value="true"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="price-fraction">
-      <value value="1"/>
+      <value value="10"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="initial-number-retailers">
       <value value="2"/>
