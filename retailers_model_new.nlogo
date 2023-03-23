@@ -2310,7 +2310,7 @@ NetLogo 6.3.0
       <value value="1"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="distance-fraction">
-      <value value="1"/>
+      <value value="6"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="randomise-buying-frequency?">
       <value value="true"/>
