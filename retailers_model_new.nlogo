@@ -14,6 +14,7 @@ globals [
 
   grid-list
   global-grid-list
+  third-retailer-id
 ]
 
 breed [customers customer]
@@ -46,6 +47,8 @@ patches-own [
 to setup
   clear-all
   py:setup py:python
+
+  set third-retailer-id 0
 
   ; Set up the world
   setup-globals
@@ -123,7 +126,6 @@ to setup-customers
     ] [
       set budget (unit-cost * 1.6)
     ]
-    show (word "budget: " budget)
   ]
 
 end
@@ -172,23 +174,23 @@ to assign-retailers-locations
       "available_locations = [22, 26]"
     )
     ask retailers [
-    let retail-cor item 1 py:runresult("grid_list_all[available_locations.pop()]")
-    show (retail-cor)
-    set xcor item 0 retail-cor
-    set ycor item 1 retail-cor
-      ]
+      let retail-cor item 1 py:runresult("grid_list_all[available_locations.pop()]")
+      show (retail-cor)
+      set xcor item 0 retail-cor
+      set ycor item 1 retail-cor
+    ]
   ]
   if experiment = "3-retailer-even-space" [
     (py:run
       "available_locations = [12, 22, 40]"
      )
     ask retailers [
-    let retail-cor item 1 py:runresult("grid_list_all[available_locations.pop()]")
-    show (retail-cor)
-    set xcor item 0 retail-cor
-    set ycor item 1 retail-cor
-      ]
-   ]
+      let retail-cor item 1 py:runresult("grid_list_all[available_locations.pop()]")
+      show (retail-cor)
+      set xcor item 0 retail-cor
+      set ycor item 1 retail-cor
+    ]
+  ]
 end
 
 to-report assign-locations
@@ -220,6 +222,35 @@ to create-grid-dict
     set global-grid-list py:runresult("grid_list")
 end
 
+to add-third-retailer
+  create-retailers 1
+  [
+    set shape "house"
+    set color random 140 + 56 ; *** TODO: change the color codes
+    set size 2.5  ; easier to see
+    set price ( random-float ( 0.5 * unit-cost ) +  unit-cost )
+
+    ifelse randomise-evaluation-period? [
+      set evaluation-period random (set-evaluation-period-range - 5 ) + 5
+    ] [
+      set evaluation-period set-evaluation-period-range
+    ]
+
+    output-print ( word "Retailer: " WHO )
+    output-print ( word "Inital Price: " price)
+    output-print ( word "Evaluation Period: " evaluation-period)
+    output-print ( " " )
+
+    let retail-cor item 1 py:runresult("grid_list_all[24]")
+    show (retail-cor)
+    set xcor item 0 retail-cor
+    set ycor item 1 retail-cor
+    set previous-cumulative-profit 1
+    set label WHO
+    set label-color 2
+    set third-retailer-id WHO
+  ]
+end
 
 ; ############################################################### GO  #######################################################################
 
@@ -233,6 +264,7 @@ to go
 ;  show (word "market-shares: " market-shares-list)
   update-customers-preference
   tick
+  if ticks = 1000 [ add-third-retailer ]
   if ticks = set-run-day [ stop ]
 end
 
@@ -485,7 +517,7 @@ initial-number-customers
 initial-number-customers
 0
 100
-50.0
+80.0
 1
 1
 NIL
@@ -561,7 +593,7 @@ distance-fraction
 distance-fraction
 0
 10
-1.4
+1.0
 0.2
 1
 NIL
@@ -576,7 +608,7 @@ price-fraction
 price-fraction
 0
 10
-1.4
+1.0
 0.2
 1
 NIL
@@ -701,7 +733,7 @@ set-buying-frequency
 set-buying-frequency
 1
 7
-5.0
+7.0
 1
 1
 NIL
@@ -736,7 +768,7 @@ set-run-day
 set-run-day
 0
 5000
-150.0
+2000.0
 50
 1
 NIL
@@ -809,8 +841,8 @@ HORIZONTAL
 TEXTBOX
 548
 67
-724
-115
+641
+86
 Parameters\n
 13
 0.0
@@ -1162,6 +1194,64 @@ NetLogo 6.3.0
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
+<experiments>
+  <experiment name="perturbation" repetitions="1" runMetricsEveryStep="true">
+    <setup>setup</setup>
+    <go>go</go>
+    <timeLimit steps="2000"/>
+    <metric>[ cumulative-profit ] of retailer 0</metric>
+    <metric>[ market-share ] of retailer 0</metric>
+    <metric>[ price ] of retailer 0</metric>
+    <metric>[ cumulative-profit ] of retailer 1</metric>
+    <metric>[ market-share ] of retailer 1</metric>
+    <metric>[ price ] of retailer 1</metric>
+    <metric>[ cumulative-profit ] of retailer third-retailer-id</metric>
+    <metric>[ market-share ] of retailer third-retailer-id</metric>
+    <metric>[ price ] of retailer third-retailer-id</metric>
+    <enumeratedValueSet variable="initial-number-customers">
+      <value value="80"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="set-run-day">
+      <value value="2000"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="set-evaluation-period-range">
+      <value value="15"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="randomise-budget?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="price-fraction">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="initial-number-retailers">
+      <value value="2"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="distance-fraction">
+      <value value="1"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="randomise-buying-frequency?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="Experiment">
+      <value value="&quot;2-retailer-even-space&quot;"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="randomise-evaluation-period?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="unit-cost">
+      <value value="30"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="show-shop-id?">
+      <value value="true"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="set-buying-frequency">
+      <value value="7"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="show-chosen-shop?">
+      <value value="true"/>
+    </enumeratedValueSet>
+  </experiment>
+</experiments>
 @#$#@#$#@
 @#$#@#$#@
 default
