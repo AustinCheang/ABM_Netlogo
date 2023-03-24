@@ -1195,7 +1195,7 @@ NetLogo 6.3.0
 @#$#@#$#@
 @#$#@#$#@
 <experiments>
-  <experiment name="perturbation" repetitions="1" runMetricsEveryStep="true">
+  <experiment name="perturbation" repetitions="4" runMetricsEveryStep="true">
     <setup>setup</setup>
     <go>go</go>
     <timeLimit steps="2000"/>
